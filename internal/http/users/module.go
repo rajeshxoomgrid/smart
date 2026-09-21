@@ -13,9 +13,9 @@ type Module struct {
 	tokenAuth *jwtauth.JWTAuth
 }
 
-func NewModule(db *sql.DB, tokenAuth *jwtauth.JWTAuth, roleProvider RoleProvider, trnantProvide TenantProvider) *Module {
+func NewModule(db *sql.DB, tokenAuth *jwtauth.JWTAuth, roleProvider RoleProvider, tenantProvide TenantProvider) *Module {
 	store := NewStore(db)
-	service := NewService(store, roleProvider, trnantProvide)
+	service := NewService(store, roleProvider, tenantProvide)
 	handler := NewHandler(service, tokenAuth)
 
 	return &Module{

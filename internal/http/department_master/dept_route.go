@@ -22,8 +22,8 @@ func (m *DeptModeule) Router() chi.Router {
 		r.Use(auth.Verifier(m.tokenAuth))
 		r.Use(auth.Authenticator(m.tokenAuth))
 		r.Use(auth.UserContextInjector)
+		r.Post("/createdept", m.DeptHandler.Create)
 
-		// r.Post("/createassembly", m.Handler.CreateAssembly)
 	})
 
 	if err := chi.Walk(r, func(

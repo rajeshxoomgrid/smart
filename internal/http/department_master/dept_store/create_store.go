@@ -22,8 +22,8 @@ func (s *DeptStore) Create(
 	req *deptdto.CreateDepartmentRequest,
 ) (*deptdto.Department, error) {
 
-	department := strings.TrimSpace(
-		req.Department,
+	department := strings.ToLower(
+		strings.TrimSpace(req.Department),
 	)
 
 	var result deptdto.Department

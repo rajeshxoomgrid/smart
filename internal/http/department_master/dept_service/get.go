@@ -1,5 +1,13 @@
 package deptservice
 
+import (
+	"context"
+	"fmt"
+
+	"github.com/rajeshbond/smart/internal/auth"
+	deptdto "github.com/rajeshbond/smart/internal/http/department_master/dept_dto"
+)
+
 // import (
 // 	"context"
 // 	"fmt"
@@ -12,52 +20,25 @@ package deptservice
 // // GET
 // // ============================================================
 
-// func (s *DeptService) GetByID(
-// 	ctx context.Context,
-// 	claims *auth.UserClaims,
-// 	id int64,
-// ) (*deptdto.Department, error) {
+func (s *DeptService) GetByID(
+	ctx context.Context,
+	claims *auth.UserClaims,
+	id int64,
+) (*deptdto.Department, error) {
 
-// 	if claims == nil {
-// 		return nil, fmt.Errorf(
-// 			"authentication claims are required",
-// 		)
-// 	}
+	if claims == nil {
+		return nil, fmt.Errorf(
+			"authentication claims are required",
+		)
+	}
 
-// 	if id <= 0 {
-// 		return nil, ErrInvalidID
-// 	}
+	if id <= 0 {
+		return nil, ErrInvalidID
+	}
 
-// 	return s.DeptStore.GetByID(
-// 		ctx,
-// 		s.Store.db,
-// 		id,
-// 	)
-// }
+	return s.DeptStore.GetByID(
+		ctx,
+		id,
+	)
 
-// // ============================================================
-// // GET
-// // ============================================================
-
-// func (s *Service) GetByID(
-// 	ctx context.Context,
-// 	claims *auth.UserClaims,
-// 	id int64,
-// ) (*dto.Department, error) {
-
-// 	if claims == nil {
-// 		return nil, fmt.Errorf(
-// 			"authentication claims are required",
-// 		)
-// 	}
-
-// 	if id <= 0 {
-// 		return nil, ErrInvalidID
-// 	}
-
-// 	return s.DeptStore.GetByID(
-// 		ctx,
-// 		s.Store.DB,
-// 		id,
-// 	)
-// }
+}
