@@ -19,7 +19,7 @@ func (s *DeptStore) Create(
 	ctx context.Context,
 	tx *sql.Tx,
 	userID int64,
-	req *deptdto.CreateRequest,
+	req *deptdto.CreateDepartmentRequest,
 ) (*deptdto.Department, error) {
 
 	department := strings.TrimSpace(

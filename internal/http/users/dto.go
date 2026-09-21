@@ -21,6 +21,17 @@ type UserCreateRequest struct {
 	CreatedBy  *int64  `json:"created_by,omitempty"`
 	UpdatedBy  *int64  `json:"updated_by,omitempty"`
 }
+type CreateTenantUserRequest struct {
+	TenantID   int64   `json:"tenant_id" validate:"required"`
+	RoleID     int64   `json:"role_id" validate:"required"`
+	EmployeeID string  `json:"employee_id" validate:"required"`
+	UserName   string  `json:"user_name" validate:"required"`
+	Phone      *string `json:"phone"`
+	Email      *string `json:"email"`
+	Password   string  `json:"password" validate:"required,min=6"`
+	CreatedBy  *int64  `json:"created_by,omitempty"`
+	UpdatedBy  *int64  `json:"updated_by,omitempty"`
+}
 
 // Response DTO
 

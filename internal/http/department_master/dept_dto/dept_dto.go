@@ -21,7 +21,7 @@ type Department struct {
 // Create Request
 // ============================================================
 
-type CreateRequest struct {
+type CreateDepartmentRequest struct {
 	Department string `json:"department"`
 }
 

@@ -177,6 +177,7 @@ func (h *Handler) CreateTenantUser(w http.ResponseWriter, r *http.Request) {
 	// Call Service
 
 	fmt.Println("Handler----->", req)
+	//
 
 	resp, err := h.Service.CreateTenantUser(ctx, claims, &req)
 	if err != nil {

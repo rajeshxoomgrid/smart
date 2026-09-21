@@ -28,6 +28,18 @@ func CanCreateDevice(role string) bool {
 	return false
 }
 
+func CanCreateDeprtment(role string) bool {
+	switch strings.ToLower(role) {
+	case
+		RoleSuperAdmin,
+		RoleAdminTenant:
+
+		return true
+	}
+
+	return false
+}
+
 func CanDeleteDevice(role string) bool {
 
 	switch strings.ToLower(role) {

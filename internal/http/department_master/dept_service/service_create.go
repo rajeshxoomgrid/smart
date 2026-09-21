@@ -17,7 +17,7 @@ import (
 func (s *DeptService) Create(
 	ctx context.Context,
 	claims *auth.UserClaims,
-	req *deptdto.CreateRequest,
+	req *deptdto.CreateDepartmentRequest,
 ) (*deptdto.Department, error) {
 
 	if claims == nil {
