@@ -91,18 +91,18 @@ func NewRouter(app *App) http.Handler {
 	tenantModule := tenant.NewModule(app.DB.SQLDB, tokenAuth)
 	r.Mount("/tenant", tenantModule.Router())
 
-	//3. Users
-	usersModule := users.NewModule(app.DB.SQLDB, tokenAuth, userRoleModule.Service, tenantModule.Service)
-	r.Mount("/users", usersModule.Router())
-
 	// Permission router
 	permissionModule := permission.NewPermissionModule(app.DB.SQLDB, tokenAuth)
 	r.Mount("/permission", permissionModule.Router())
 
 	// Depertment
 
-	departmentRoute := departmentmaster.NewDeptModule(app.DB.SQLDB, tokenAuth)
-	r.Mount("/dept", departmentRoute.Router())
+	departmentModule := departmentmaster.NewDeptModule(app.DB.SQLDB, tokenAuth)
+	r.Mount("/dept", departmentModule.Router())
+
+	//3. Users
+	usersModule := users.NewModule(app.DB.SQLDB, tokenAuth, userRoleModule.Service, tenantModule.Service, departmentModule.DeptService)
+	r.Mount("/users", usersModule.Router())
 
 	// Tenant shift
 	tenantShiftMoulde := tenantshifts.NewModule(app.DB.SQLDB, tokenAuth)

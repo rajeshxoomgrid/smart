@@ -34,13 +34,15 @@ type Service struct {
 	Store          *Store
 	RoleProvider   RoleProvider
 	TenantProvider TenantProvider
+	DeptProvider   DeptProvider
 }
 
-func NewService(store *Store, roleProvider RoleProvider, tenantProvider TenantProvider) *Service {
+func NewService(store *Store, roleProvider RoleProvider, tenantProvider TenantProvider, deptProvide DeptProvider) *Service {
 	return &Service{
 		Store:          store,
 		RoleProvider:   roleProvider,
 		TenantProvider: tenantProvider,
+		DeptProvider:   deptProvide,
 	}
 }
 
