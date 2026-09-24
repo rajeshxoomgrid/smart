@@ -23,6 +23,8 @@ func (m *DeptModeule) Router() chi.Router {
 		r.Use(auth.Authenticator(m.tokenAuth))
 		r.Use(auth.UserContextInjector)
 		r.Post("/createdept", m.DeptHandler.Create)
+		r.Get("/{id}", m.DeptHandler.GetByID)
+		r.Get("/name/{name}", m.DeptHandler.GetByName)
 
 	})
 

@@ -24,6 +24,7 @@ type UserCreateRequest struct {
 type CreateTenantUserRequest struct {
 	TenantID   int64   `json:"tenant_id" validate:"required"`
 	RoleID     int64   `json:"role_id" validate:"required"`
+	DeptID     int64   `json:"dept_id" validate:"required"`
 	EmployeeID string  `json:"employee_id" validate:"required"`
 	UserName   string  `json:"user_name" validate:"required"`
 	Phone      *string `json:"phone"`
@@ -78,6 +79,7 @@ type CreateUserResponse struct {
 	Email      *string `json:"email"`
 	IsVerified bool    `json:"is_verified"`
 	IsActive   bool    `json:"is_active"`
+	DeptID     int64   `json:"dept_id"`
 	IsDeleted  bool    `json:"is_deleted"`
 	DeletedBy  *int64  `json:"deleted_by"`
 	CreatedBy  int64   `json:"created_by"`

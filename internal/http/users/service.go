@@ -257,7 +257,7 @@ func (s *Service) CreateSuperUserTx(ctx context.Context, tx *sql.Tx, tenantID in
 }
 
 // 4. Create Tenant User
-func (s *Service) CreateTenantUser(ctx context.Context, claims *auth.UserClaims, req *UserCreateRequest) (*CreateUserResponse, error) {
+func (s *Service) CreateTenantUser(ctx context.Context, claims *auth.UserClaims, req *CreateTenantUserRequest) (*CreateUserResponse, error) {
 
 	fmt.Println("User data----->", req)
 	// Basic validation
@@ -276,6 +276,10 @@ func (s *Service) CreateTenantUser(ctx context.Context, claims *auth.UserClaims,
 	}
 
 	reqRole, err := s.RoleProvider.GetRoleNameByID(ctx, req.RoleID)
+
+	reqDept, err := s.DeptProvider.GetByID(ctx, req.DeptID)
+
+	println("reqDept", reqDept)
 
 	if err != nil {
 		return nil, err

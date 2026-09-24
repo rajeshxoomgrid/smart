@@ -162,7 +162,7 @@ func (h *Handler) CreateTenantUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse Request
-	var req UserCreateRequest
+	var req CreateTenantUserRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.JSON(w, http.StatusBadRequest, response.InvalidRequestBody)

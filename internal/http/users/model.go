@@ -12,6 +12,8 @@ type User struct {
 	Phone      *string `db:"phone" json:"phone"`
 	Email      *string `db:"email" json:"email"`
 
+	DeptID int64 `db:"dept_id" json:"dept_id"`
+
 	Password string `db:"password" json:"password"`
 
 	// Status

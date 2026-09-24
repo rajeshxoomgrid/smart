@@ -32,3 +32,18 @@ func (s *DeptService) GetByID(
 		id,
 	)
 }
+
+func (s *DeptService) GetByName(
+	ctx context.Context,
+	name string,
+) (*deptdto.Department, error) {
+
+	if name == "" {
+		return nil, ErrInvalidName
+	}
+
+	return s.DeptStore.GetByName(
+		ctx,
+		name,
+	)
+}

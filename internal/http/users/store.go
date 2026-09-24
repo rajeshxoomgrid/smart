@@ -305,7 +305,7 @@ func (s *Store) CreateSuperAdminTx(ctx context.Context, tx *sql.Tx, dto UserCrea
 }
 
 // 6.create Tenant Users
-func (s *Store) CreateTenantUser(ctx context.Context, dto *UserCreateRequest) (*CreateUserResponse, error) {
+func (s *Store) CreateTenantUser(ctx context.Context, dto *CreateTenantUserRequest) (*CreateUserResponse, error) {
 
 	query := `
 	INSERT INTO "user"

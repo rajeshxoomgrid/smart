@@ -47,6 +47,18 @@ const queryGetDepartmentByID = `
 `
 
 // ============================================================
+// GET BY Department Name
+// ============================================================
+const queryGetDepartmentByName = `
+    SELECT 
+        ` + departmentSelectColumns + `
+    FROM department_master
+    WHERE
+        department = $1
+        AND is_deleted = FALSE
+`
+
+// ============================================================
 // LIST
 // ============================================================
 

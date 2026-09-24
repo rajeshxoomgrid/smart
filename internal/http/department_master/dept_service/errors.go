@@ -14,4 +14,8 @@ var (
 	ErrInvalidID = errors.New(
 		"invalid department id",
 	)
+
+	ErrInvalidName = errors.New(
+		"invalid department name",
+	)
 )
