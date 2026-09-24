@@ -277,10 +277,6 @@ func (s *Service) CreateTenantUser(ctx context.Context, claims *auth.UserClaims,
 
 	reqRole, err := s.RoleProvider.GetRoleNameByID(ctx, req.RoleID)
 
-	reqDept, err := s.DeptProvider.GetByID(ctx, req.DeptID)
-
-	println("reqDept", reqDept)
-
 	if err != nil {
 		return nil, err
 	}

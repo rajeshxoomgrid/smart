@@ -13,6 +13,8 @@ func IsSuper(role string) bool {
 }
 
 func ValidateTenantAccess(role, claimsEmpID, reqEmpID string) error {
+	fmt.Println("================================================================================================")
+	fmt.Println("Inside ValidateTenantAccess with role:", role, "claimsEmpID:", claimsEmpID, "reqEmpID:", reqEmpID)
 
 	role = strings.ToLower(strings.TrimSpace(role))
 
@@ -106,7 +108,7 @@ func IsTenatAdminRole(reqRole string) bool {
 	fmt.Print("Inside isTenanat Admin ", reqRole)
 	allowedRoles := map[string]struct{}{
 		// "tenantadmin": {},
-		"admintenant": {},
+		"tenantadmin": {},
 		"tenantowner": {},
 	}
 

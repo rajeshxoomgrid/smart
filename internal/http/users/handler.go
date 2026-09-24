@@ -146,6 +146,7 @@ func (h *Handler) Test1(w http.ResponseWriter, r *http.Request) {
 
 // 4. Create Tenant User (Users for Tenants)
 func (h *Handler) CreateTenantUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888")
 	ctx := r.Context()
 	defer r.Body.Close()
 

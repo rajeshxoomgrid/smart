@@ -305,16 +305,106 @@ func (s *Store) CreateSuperAdminTx(ctx context.Context, tx *sql.Tx, dto UserCrea
 }
 
 // 6.create Tenant Users
+// func (s *Store) CreateTenantUser(ctx context.Context, dto *CreateTenantUserRequest) (*CreateUserResponse, error) {
+
+// 	query := `
+// 	INSERT INTO "user"
+// 	(tenant_id, dept_id, role_id, employee_id, user_name, phone, email, password, created_by, updated_by)
+// 	VALUES
+// 	($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+// 	RETURNING
+// 		id,
+// 		tenant_id,
+// 		role_id,
+// 		employee_id,
+// 		user_name,
+// 		phone,
+// 		email,
+// 		is_verified,
+// 		is_active,
+// 		is_deleted,
+// 		deleted_by,
+// 		created_by,
+// 		updated_by
+// 	`
+
+// 	var resp CreateUserResponse
+
+// 	// nullable fields
+// 	var phone sql.NullString
+// 	var email sql.NullString
+// 	var deletedBy sql.NullInt64
+
+// 	err := s.db.QueryRowContext(
+// 		ctx,
+// 		query,
+// 		dto.TenantID,
+// 		dto.DeptID,
+// 		dto.RoleID,
+// 		dto.EmployeeID,
+// 		dto.UserName,
+// 		dto.Phone,
+// 		dto.Email,
+// 		dto.Password,
+// 		dto.CreatedBy,
+// 		dto.UpdatedBy,
+// 	).Scan(
+// 		&resp.ID,
+// 		&resp.TenantID,
+// 		&resp.DeptID,
+// 		&resp.RoleID,
+// 		&resp.EmployeeID,
+// 		&resp.UserName,
+// 		&phone,
+// 		&email,
+// 		&resp.IsVerified,
+// 		&resp.IsActive,
+// 		&resp.IsDeleted, // ✅ direct bool
+// 		&deletedBy,
+// 		&resp.CreatedBy,
+// 		&resp.UpdatedBy,
+// 	)
+
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	// ✅ Handle nullable fields
+// 	if phone.Valid {
+// 		resp.Phone = &phone.String
+// 	}
+// 	if email.Valid {
+// 		resp.Email = &email.String
+// 	}
+// 	if deletedBy.Valid {
+// 		resp.DeletedBy = &deletedBy.Int64
+// 	}
+
+// 	return &resp, nil
+// }
+
 func (s *Store) CreateTenantUser(ctx context.Context, dto *CreateTenantUserRequest) (*CreateUserResponse, error) {
 
 	query := `
-	INSERT INTO "user"
-	(tenant_id, role_id, employee_id, user_name, phone, email, password, created_by, updated_by)
+	INSERT INTO public."user"
+	(
+		tenant_id,
+		dept_id,
+		role_id,
+		employee_id,
+		user_name,
+		phone,
+		email,
+		password,
+		created_by,
+		updated_by
+	)
 	VALUES
-	($1,$2,$3,$4,$5,$6,$7,$8,$9)
-	RETURNING 
+		($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+	RETURNING
 		id,
 		tenant_id,
+		dept_id,
 		role_id,
 		employee_id,
 		user_name,
@@ -330,7 +420,6 @@ func (s *Store) CreateTenantUser(ctx context.Context, dto *CreateTenantUserReque
 
 	var resp CreateUserResponse
 
-	// nullable fields
 	var phone sql.NullString
 	var email sql.NullString
 	var deletedBy sql.NullInt64
@@ -339,6 +428,7 @@ func (s *Store) CreateTenantUser(ctx context.Context, dto *CreateTenantUserReque
 		ctx,
 		query,
 		dto.TenantID,
+		dto.DeptID,
 		dto.RoleID,
 		dto.EmployeeID,
 		dto.UserName,
@@ -350,6 +440,7 @@ func (s *Store) CreateTenantUser(ctx context.Context, dto *CreateTenantUserReque
 	).Scan(
 		&resp.ID,
 		&resp.TenantID,
+		&resp.DeptID,
 		&resp.RoleID,
 		&resp.EmployeeID,
 		&resp.UserName,
@@ -357,7 +448,7 @@ func (s *Store) CreateTenantUser(ctx context.Context, dto *CreateTenantUserReque
 		&email,
 		&resp.IsVerified,
 		&resp.IsActive,
-		&resp.IsDeleted, // ✅ direct bool
+		&resp.IsDeleted,
 		&deletedBy,
 		&resp.CreatedBy,
 		&resp.UpdatedBy,
@@ -367,13 +458,14 @@ func (s *Store) CreateTenantUser(ctx context.Context, dto *CreateTenantUserReque
 		return nil, err
 	}
 
-	// ✅ Handle nullable fields
 	if phone.Valid {
 		resp.Phone = &phone.String
 	}
+
 	if email.Valid {
 		resp.Email = &email.String
 	}
+
 	if deletedBy.Valid {
 		resp.DeletedBy = &deletedBy.Int64
 	}
