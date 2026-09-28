@@ -8,9 +8,10 @@ const (
 			read_perm,
 			update_perm,
 			delete_perm,
+			temp_update_permission,
 			created_by
 		)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		VALUES ($1, $2, $3, $4, $5, $6,$7)
 		RETURNING
 			id,
 			all_perm,
@@ -21,6 +22,7 @@ const (
 			created_by,
 			updated_by,
 			deleted_by,
+			temp_update_permission,
 			created_at,
 			updated_at,
 			deleted_at,
@@ -38,6 +40,7 @@ const (
 			created_by,
 			updated_by,
 			deleted_by,
+			temp_update_permission,
 			created_at,
 			updated_at,
 			deleted_at,
@@ -55,9 +58,10 @@ const (
 			read_perm = $3,
 			update_perm = $4,
 			delete_perm = $5,
-			updated_by = $6,
+			temp_update_permission = $6,
+			updated_by = $7,
 			updated_at = NOW()
-		WHERE id = $7
+		WHERE id = $8
 		  AND is_deleted = FALSE
 		RETURNING
 			id,
@@ -66,6 +70,7 @@ const (
 			read_perm,
 			update_perm,
 			delete_perm,
+			temp_update_permission,
 			created_by,
 			updated_by,
 			deleted_by,

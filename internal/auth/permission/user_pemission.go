@@ -9,7 +9,9 @@ func IsXoomUser(roler string) bool {
 	case
 		RoleSuperAdmin,
 		RoleXoomAdmin,
-		RoleXoomUser:
+		RoleXoomUser,
+		RoleTenantOwner,
+		RoleTenantAdmin:
 		return true
 	}
 	return false

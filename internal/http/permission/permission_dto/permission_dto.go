@@ -6,11 +6,12 @@ import "time"
 type Permission struct {
 	ID int64 `json:"id"`
 
-	AllPerm    bool `json:"all_perm"`
-	CreatePerm bool `json:"create_perm"`
-	ReadPerm   bool `json:"read_perm"`
-	UpdatePerm bool `json:"update_perm"`
-	DeletePerm bool `json:"delete_perm"`
+	AllPerm        bool `json:"all_perm"`
+	CreatePerm     bool `json:"create_perm"`
+	ReadPerm       bool `json:"read_perm"`
+	UpdatePerm     bool `json:"update_perm"`
+	TempUpdatePerm bool `json:"temp_update_permission"`
+	DeletePerm     bool `json:"delete_perm"`
 
 	CreatedBy *int64 `json:"created_by,omitempty"`
 	UpdatedBy *int64 `json:"updated_by,omitempty"`
@@ -25,11 +26,12 @@ type Permission struct {
 
 // CreatePermissionRequest represents the create request.
 type CreatePermissionRequest struct {
-	AllPerm    bool `json:"all_perm"`
-	CreatePerm bool `json:"create_perm"`
-	ReadPerm   bool `json:"read_perm"`
-	UpdatePerm bool `json:"update_perm"`
-	DeletePerm bool `json:"delete_perm"`
+	AllPerm        bool `json:"all_perm"`
+	CreatePerm     bool `json:"create_perm"`
+	ReadPerm       bool `json:"read_perm"`
+	UpdatePerm     bool `json:"update_perm"`
+	TempUpdatePerm bool `json:"temp_update_permission"`
+	DeletePerm     bool `json:"delete_perm"`
 
 	CreatedBy *int64 `json:"created_by,omitempty"`
 }
