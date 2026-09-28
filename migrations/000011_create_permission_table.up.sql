@@ -6,6 +6,7 @@ CREATE TABLE permission (
     read_perm   BOOLEAN NOT NULL DEFAULT FALSE,
     update_perm BOOLEAN NOT NULL DEFAULT FALSE,
     delete_perm BOOLEAN NOT NULL DEFAULT FALSE,
+    temp_update_permission BOOLEAN NOT NULL DEFAULT FALSE,
 
     created_by  BIGINT,
     updated_by  BIGINT,
