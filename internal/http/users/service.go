@@ -516,3 +516,26 @@ func (ser *Service) GetAllTenantUsers(ctx context.Context, claims *auth.UserClai
 
 	return ser.Store.GetUsersByTenantID(ctx, claims.TenantID)
 }
+
+func (ser *Service) GetUserByEmployeeID(ctx context.Context, employeeID string, tenantID int64) (*UserResponse, error) {
+	if employeeID == "" {
+		return nil, errors.New("employee_id is required")
+	}
+
+	if tenantID == 0 {
+		return nil, errors.New("tenant_id is required")
+
+	}
+
+	user, err := ser.Store.GetUserbyEmploeeID(ctx, employeeID, tenantID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UserResponse{
+		ID:         user.ID,
+		EmployeeID: user.EmployeeID,
+		TenantID:   user.TenantID,
+		RoleID:     user.RoleID,
+	}, nil
+}
