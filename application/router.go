@@ -12,6 +12,7 @@ package application
 //////////////////////////////////////////////
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -62,6 +63,17 @@ func NewRouter(app *App) http.Handler {
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+
+	// Static files
+	staticPath, _ := filepath.Abs("./web/static")
+	fileServer := http.FileServer(http.Dir(staticPath))
+	r.Handle("/static/*", http.StripPrefix("/static/", fileServer))
+
+	// Home
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		indexPath, _ := filepath.Abs("./web/index.html")
+		http.ServeFile(w, r, indexPath)
+	})
 
 	// Health check
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {

@@ -1,30 +1,25 @@
 package permissionservice
 
-import (
-	"context"
-	"database/sql"
-)
+// func (s *PermissionService) withTransaction(
+// 	ctx context.Context,
+// 	fn func(tx *sql.Tx) error,
+// ) error {
 
-func (s *PermissionService) withTransaction(
-	ctx context.Context,
-	fn func(tx *sql.Tx) error,
-) error {
+// 	tx, err := s.PermissionStore.BeginTx(
+// 		ctx,
+// 		nil,
+// 	)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	tx, err := s.PermissionStore.BeginTx(
-		ctx,
-		nil,
-	)
-	if err != nil {
-		return err
-	}
+// 	defer func() {
+// 		_ = tx.Rollback()
+// 	}()
 
-	defer func() {
-		_ = tx.Rollback()
-	}()
+// 	if err := fn(tx); err != nil {
+// 		return err
+// 	}
 
-	if err := fn(tx); err != nil {
-		return err
-	}
-
-	return tx.Commit()
-}
+// 	return tx.Commit()
+// }

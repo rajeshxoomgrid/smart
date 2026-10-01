@@ -1,44 +1,37 @@
 package permissionservice
 
-import (
-	"context"
-	"database/sql"
+// func (s *PermissionService) Update(
+// 	ctx context.Context,
+// 	id int64,
+// 	req *permissiondto.UpdatePermissionRequest,
+// ) (*permissiondto.Permission, error) {
 
-	permissiondto "github.com/rajeshbond/smart/internal/http/permission/permission_dto"
-)
+// 	var permission *permissiondto.Permission
 
-func (s *PermissionService) Update(
-	ctx context.Context,
-	id int64,
-	req *permissiondto.UpdatePermissionRequest,
-) (*permissiondto.Permission, error) {
+// 	err := s.withTransaction(
+// 		ctx,
+// 		func(tx *sql.Tx) error {
 
-	var permission *permissiondto.Permission
+// 			var err error
 
-	err := s.withTransaction(
-		ctx,
-		func(tx *sql.Tx) error {
+// 			permission, err = s.PermissionStore.Update(
+// 				ctx,
+// 				tx,
+// 				id,
+// 				req,
+// 			)
 
-			var err error
+// 			if err != nil {
+// 				return err
+// 			}
 
-			permission, err = s.PermissionStore.Update(
-				ctx,
-				tx,
-				id,
-				req,
-			)
+// 			return nil
+// 		},
+// 	)
 
-			if err != nil {
-				return err
-			}
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-			return nil
-		},
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return permission, nil
-}
+// 	return permission, nil
+// }

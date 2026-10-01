@@ -1,8 +1,7 @@
 package permissionhandler
 
 import (
-	"database/sql"
-	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -83,39 +82,40 @@ func (h *PermissionHandler) Delete(
 
 	deletedBy := claims.UserID
 
+	fmt.Println("deletedBy:", deletedBy)
+
 	// --------------------------------------------------
 	// Service
 	// --------------------------------------------------
 
-	err = h.PermissionService.Delete(
-		ctx,
-		id,
-		&deletedBy,
-	)
+	// err = h.PermissionService.Delete(
+	// 	ctx,
+	// 	id,
+	// 	&deletedBy,
+	// )
 
-	if err != nil {
+	// if err != nil {
 
-		if errors.Is(err, sql.ErrNoRows) {
-			response.Error(
-				w,
-				http.StatusNotFound,
-				"permission not found",
-			)
-			return
-		}
+	// 	if errors.Is(err, sql.ErrNoRows) {
+	// 		response.Error(
+	// 			w,
+	// 			http.StatusNotFound,
+	// 			"permission not found",
+	// 		)
+	// 		return
+	// 	}
 
-		response.Error(
-			w,
-			http.StatusInternalServerError,
-			err.Error(),
-		)
+	// 	response.Error(
+	// 		w,
+	// 		http.StatusInternalServerError,
+	// 		err.Error(),
+	// 	)
 
-		return
-	}
-
-	// --------------------------------------------------
-	// 204 No Content
-	// --------------------------------------------------
-
-	w.WriteHeader(http.StatusNoContent)
+	return
 }
+
+// --------------------------------------------------
+// 204 No Content
+// --------------------------------------------------
+
+// w.WriteHeader(http.StatusNoContent)

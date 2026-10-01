@@ -2,9 +2,16 @@ package permissiondto
 
 import "time"
 
-// Permission represents a permission record.
+// ============================================================
+// Permission
+// ============================================================
+
 type Permission struct {
 	ID int64 `json:"id"`
+
+	UserID       int64 `json:"user_id"`
+	RoleID       int64 `json:"role_id"`
+	DepartmentID int64 `json:"department_id"`
 
 	AllPerm        bool `json:"all_perm"`
 	CreatePerm     bool `json:"create_perm"`
@@ -24,8 +31,15 @@ type Permission struct {
 	IsDeleted bool `json:"is_deleted"`
 }
 
-// CreatePermissionRequest represents the create request.
+// ============================================================
+// Create Permission Request
+// ============================================================
+
 type CreatePermissionRequest struct {
+	UserID       int64 `json:"user_id" validate:"required"`
+	RoleID       int64 `json:"role_id" validate:"required"`
+	DepartmentID int64 `json:"department_id" validate:"required"`
+
 	AllPerm        bool `json:"all_perm"`
 	CreatePerm     bool `json:"create_perm"`
 	ReadPerm       bool `json:"read_perm"`
@@ -36,29 +50,46 @@ type CreatePermissionRequest struct {
 	CreatedBy *int64 `json:"created_by,omitempty"`
 }
 
-// UpdatePermissionRequest represents the update request.
+// ============================================================
+// Update Permission Request
+// ============================================================
+
 type UpdatePermissionRequest struct {
-	AllPerm    bool `json:"all_perm"`
-	CreatePerm bool `json:"create_perm"`
-	ReadPerm   bool `json:"read_perm"`
-	UpdatePerm bool `json:"update_perm"`
-	DeletePerm bool `json:"delete_perm"`
+	UserID       int64 `json:"user_id" validate:"required"`
+	RoleID       int64 `json:"role_id" validate:"required"`
+	DepartmentID int64 `json:"department_id" validate:"required"`
+
+	AllPerm        bool `json:"all_perm"`
+	CreatePerm     bool `json:"create_perm"`
+	ReadPerm       bool `json:"read_perm"`
+	UpdatePerm     bool `json:"update_perm"`
+	TempUpdatePerm bool `json:"temp_update_permission"`
+	DeletePerm     bool `json:"delete_perm"`
 
 	UpdatedBy *int64 `json:"updated_by,omitempty"`
 }
 
-// PermissionResponse represents a single permission response.
+// ============================================================
+// Response
+// ============================================================
+
 type PermissionResponse struct {
 	Data *Permission `json:"data"`
 }
 
-// PermissionListResponse represents a list of permissions.
+// ============================================================
+// List Response
+// ============================================================
+
 type PermissionListResponse struct {
 	Data  []*Permission `json:"data"`
 	Total int           `json:"total"`
 }
 
-// PermissionFilter represents a permission filter.
+// ============================================================
+// Filter
+// ============================================================
+
 type PermissionFilter struct {
 	Page      int    `json:"page" query:"page"`
 	PageSize  int    `json:"page_size" query:"page_size"`

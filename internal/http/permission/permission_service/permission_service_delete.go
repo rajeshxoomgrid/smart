@@ -1,32 +1,27 @@
 package permissionservice
 
-import (
-	"context"
-	"database/sql"
-)
+// func (s *PermissionService) Delete(
+// 	ctx context.Context,
+// 	id int64,
+// 	deletedBy *int64,
+// ) error {
 
-func (s *PermissionService) Delete(
-	ctx context.Context,
-	id int64,
-	deletedBy *int64,
-) error {
+// 	return s.withTransaction(
+// 		ctx,
+// 		func(tx *sql.Tx) error {
 
-	return s.withTransaction(
-		ctx,
-		func(tx *sql.Tx) error {
+// 			// err := s.PermissionStore.Delete(
+// 			// 	ctx,
+// 			// 	tx,
+// 			// 	id,
+// 			// 	// deletedBy,
+// 			// )
 
-			err := s.PermissionStore.Delete(
-				ctx,
-				tx,
-				id,
-				deletedBy,
-			)
+// 			// if err != nil {
+// 			// 	return err
+// 			// }
 
-			if err != nil {
-				return err
-			}
-
-			return nil
-		},
-	)
-}
+// 			return nil
+// 		},
+// 	)
+// }

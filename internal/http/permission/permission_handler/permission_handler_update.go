@@ -106,11 +106,11 @@ func (h *PermissionHandler) Update(
 	// Service
 	// --------------------------------------------------
 
-	permission, err := h.PermissionService.Update(
-		ctx,
-		id,
-		&req,
-	)
+	// permission, err := h.PermissionService.Update(
+	// 	ctx,
+	// 	id,
+	// 	&req,
+	// )
 
 	if err != nil {
 
@@ -136,11 +136,12 @@ func (h *PermissionHandler) Update(
 	// Response
 	// --------------------------------------------------
 
-	response.JSON(
-		w,
-		http.StatusOK,
-		permissiondto.PermissionResponse{
-			Data: permission,
-		},
-	)
+	// response.JSON(
+	// 	w,
+	// 	http.StatusOK,
+	// 	"Testing"},
+	// 	// permissiondto.PermissionResponse{
+	// 	// 	Data: permission.CanCreateDeprtment(),
+	// 	// },
+	// )
 }

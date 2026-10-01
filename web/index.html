@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Abhijeet Plastic</title>
+
+  <meta
+    name="description"
+    content="Abhijeet Plastic Injection Machine live cycle time monitoring"
+  />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- Logo -->
+    <img
+      src="/static/images/splash_icon.png.png"
+      alt="Abhijeet Logo"
+      class="snt"
+    />
+
+    <div class="content">
+
+      <h3 class="logo">Molding OEE</h3>
+
+      <p>APP is under construction</p>
+
+      <h1>We're <span>Launching</span> Soon..</h1>
+
+      <!-- Countdown -->
+      <div class="launch-time">
+
+        <div>
+          <p id="days">00</p>
+          <span>Days</span>
+        </div>
+
+        <div>
+          <p id="hours">00</p>
+          <span>Hours</span>
+        </div>
+
+        <div>
+          <p id="minutes">00</p>
+          <span>Minutes</span>
+        </div>
+
+        <div>
+          <p id="seconds">00</p>
+          <span>Seconds</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Rocket Image -->
+    <img
+      src="/static/images/rocket.png"
+      alt="Rocket"
+      class="rocket"
+    />
+
+  </div>
+
+
+  <!-- JavaScript -->
+  <script>
+
+    // Set your future launch date here
+    var countDownDate = new Date("oct 7, 2026 18:00:00").getTime();
+
+    var x = setInterval(function () {
+
+      var now = new Date().getTime();
+
+      var distance = countDownDate - now;
+
+      var days = Math.floor(
+        distance / (1000 * 60 * 60 * 24)
+      );
+
+      var hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24))
+        / (1000 * 60 * 60)
+      );
+
+      var minutes = Math.floor(
+        (distance % (1000 * 60 * 60))
+        / (1000 * 60)
+      );
+
+      var seconds = Math.floor(
+        (distance % (1000 * 60))
+        / 1000
+      );
+
+      if (distance < 0) {
+
+        clearInterval(x);
+
+        document.getElementById("days").innerHTML = "00";
+        document.getElementById("hours").innerHTML = "00";
+        document.getElementById("minutes").innerHTML = "00";
+        document.getElementById("seconds").innerHTML = "00";
+
+      } else {
+
+        document.getElementById("days").innerHTML = days;
+        document.getElementById("hours").innerHTML = hours;
+        document.getElementById("minutes").innerHTML = minutes;
+        document.getElementById("seconds").innerHTML = seconds;
+
+      }
+
+    }, 1000);
+
+  </script>
+
+</body>
+
+</html>
+
+

@@ -5,18 +5,32 @@ import (
 	"database/sql"
 )
 
-func (s *PermissionStore) delete(
+// ============================================================
+// DELETE - SOFT DELETE
+// ============================================================
+
+func (s *PermissionStore) Delete(
 	ctx context.Context,
-	tx *sql.Tx,
 	id int64,
 	deletedBy *int64,
 ) error {
 
-	result, err := tx.ExecContext(
+	query := `
+		UPDATE public.permission
+		SET
+			is_deleted = true,
+			deleted_by = $2,
+			deleted_at = NOW(),
+			updated_at = NOW()
+		WHERE id = $1
+		  AND is_deleted = false
+	`
+
+	result, err := s.db.ExecContext(
 		ctx,
-		queryDeletePermission,
-		deletedBy,
+		query,
 		id,
+		deletedBy,
 	)
 
 	if err != nil {

@@ -2,41 +2,38 @@ package permissionservice
 
 import (
 	"context"
-	"database/sql"
+	"errors"
 
 	permissiondto "github.com/rajeshbond/smart/internal/http/permission/permission_dto"
 )
+
+// ============================================================
+// CREATE
+// ============================================================
 
 func (s *PermissionService) Create(
 	ctx context.Context,
 	req *permissiondto.CreatePermissionRequest,
 ) (*permissiondto.Permission, error) {
 
-	var permission *permissiondto.Permission
-
-	err := s.withTransaction(
-		ctx,
-		func(tx *sql.Tx) error {
-
-			var err error
-
-			permission, err = s.PermissionStore.Create(
-				ctx,
-				tx,
-				req,
-			)
-
-			if err != nil {
-				return err
-			}
-
-			return nil
-		},
-	)
-
-	if err != nil {
-		return nil, err
+	if req == nil {
+		return nil, errors.New("request cannot be nil")
 	}
 
-	return permission, nil
+	if req.UserID <= 0 {
+		return nil, errors.New("user_id must be greater than zero")
+	}
+
+	if req.RoleID <= 0 {
+		return nil, errors.New("role_id must be greater than zero")
+	}
+
+	if req.DepartmentID <= 0 {
+		return nil, errors.New("department_id must be greater than zero")
+	}
+
+	return s.PermissionStore.Create(
+		ctx,
+		req,
+	)
 }
