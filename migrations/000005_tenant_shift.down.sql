@@ -1,5 +1,10 @@
-DROP TRIGGER IF EXISTS trg_update_tenant_shift_updated_at ON tenant_shift;
+-- ============================================================
+-- DROP SHIFT TIMING
+-- ============================================================
 
-DROP FUNCTION IF EXISTS update_updated_at_column;
+DROP TRIGGER IF EXISTS trg_update_shift_timing_updated_at
+ON shift_timing;
 
-DROP TABLE IF EXISTS tenant_shift;
+DROP INDEX IF EXISTS idx_shift_timing_tenant_shift;
+
+DROP TABLE IF EXISTS shift_timing;

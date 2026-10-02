@@ -1,35 +1,94 @@
--- =========================================
--- SHIFT TIMING TABLE
--- =========================================
+-- ============================================================
+-- SHIFT HOUR SLOT
+-- ============================================================
 
-CREATE TABLE IF NOT EXISTS shift_timing (
-    id SERIAL PRIMARY KEY,
-    tenant_shift_id INTEGER NOT NULL,
-    shift_start TIME NOT NULL,
-    shift_end TIME NOT NULL,
-    created_by INTEGER,
-    updated_by INTEGER,
+CREATE TABLE IF NOT EXISTS shift_hour_slot (
+
+    id BIGSERIAL PRIMARY KEY,
+
+    tenant_id BIGINT NOT NULL,
+
+    shift_timing_id BIGINT NOT NULL,
+
+    slot_start TIME NOT NULL,
+
+    slot_end TIME NOT NULL,
+
+    slot_index INTEGER NOT NULL,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT fk_shift_tenant FOREIGN KEY (tenant_shift_id) REFERENCES tenant_shift (id) ON DELETE CASCADE,
-    CONSTRAINT uq_shift_time UNIQUE (tenant_shift_id),
-    CONSTRAINT chk_shift_time CHECK (shift_start <> shift_end)
+
+
+    -- Tenant
+    CONSTRAINT fk_shift_hour_slot_tenant
+
+        FOREIGN KEY (tenant_id)
+
+        REFERENCES tenant(id)
+
+        ON DELETE CASCADE,
+
+
+    -- Shift timing
+    CONSTRAINT fk_shift_hour_slot_timing
+
+        FOREIGN KEY (shift_timing_id)
+
+        REFERENCES shift_timing(id)
+
+        ON DELETE CASCADE,
+
+
+    -- Slot start/end cannot be identical
+    CONSTRAINT chk_shift_hour_slot_time
+
+        CHECK (slot_start <> slot_end),
+
+
+    -- Slot index must start from 1
+    CONSTRAINT chk_shift_hour_slot_index
+
+        CHECK (slot_index > 0),
+
+
+    -- One slot index per shift
+    CONSTRAINT uq_shift_hour_slot
+
+        UNIQUE (
+            shift_timing_id,
+            slot_index
+        ),
+
+
+    -- Same tenant + shift + start time
+    -- cannot be duplicated
+    CONSTRAINT uq_shift_hour_slot_start
+
+        UNIQUE (
+            tenant_id,
+            shift_timing_id,
+            slot_start
+        )
 );
 
--- =========================================
--- TRIGGER
--- =========================================
 
-DROP TRIGGER IF EXISTS trg_update_shift_timing_updated_at ON shift_timing;
+-- ============================================================
+-- INDEXES
+-- ============================================================
 
-CREATE TRIGGER trg_update_shift_timing_updated_at
-BEFORE UPDATE
-ON shift_timing
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
+CREATE INDEX IF NOT EXISTS idx_shift_hour_slot_tenant
 
--- =========================================
--- INDEX
--- =========================================
+ON shift_hour_slot (tenant_id);
 
-CREATE INDEX IF NOT EXISTS idx_shift_timing ON shift_timing (tenant_shift_id);
+
+CREATE INDEX IF NOT EXISTS idx_shift_hour_slot_timing
+
+ON shift_hour_slot (shift_timing_id);
+
+
+CREATE INDEX IF NOT EXISTS idx_shift_hour_slot_timing_index
+
+ON shift_hour_slot (
+    shift_timing_id,
+    slot_index
+);
