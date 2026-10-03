@@ -76,7 +76,7 @@ func (s *PermissionStore) GetByID(
 // GET BY USER ID
 // ============================================================
 
-func (s *PermissionStore) GetByUserID(
+func (s *PermissionStore) GetPermissionByUserID(
 	ctx context.Context,
 	userID int64,
 ) ([]*permissiondto.Permission, error) {

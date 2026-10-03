@@ -30,7 +30,7 @@ func (s *PermissionService) GetByID(
 // GET BY USER ID
 // ============================================================
 
-func (s *PermissionService) GetByUserID(
+func (s *PermissionService) GetPermissionByUserID(
 	ctx context.Context,
 	userID int64,
 ) ([]*permissiondto.Permission, error) {
@@ -39,7 +39,7 @@ func (s *PermissionService) GetByUserID(
 		return nil, errors.New("invalid user id")
 	}
 
-	return s.PermissionStore.GetByUserID(
+	return s.PermissionStore.GetPermissionByUserID(
 		ctx,
 		userID,
 	)

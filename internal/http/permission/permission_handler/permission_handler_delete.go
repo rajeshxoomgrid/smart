@@ -111,7 +111,6 @@ func (h *PermissionHandler) Delete(
 	// 		err.Error(),
 	// 	)
 
-	return
 }
 
 // --------------------------------------------------

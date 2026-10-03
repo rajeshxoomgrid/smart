@@ -22,8 +22,13 @@ func (m *PermissionModule) Router() chi.Router {
 		r.Use(auth.Verifier(m.tokenAuth))
 		r.Use(auth.Authenticator(m.tokenAuth))
 		r.Use(auth.UserContextInjector)
+		// All Post Request
+		r.Post("/createpermission", m.PermissionHandler.Create) //To Create the Permission
+		// All the Put
+		r.Put("/updatepermission/{id}", m.PermissionHandler.UpdatePermissionRequest)
+		// All Get Request
+		r.Get("/{id}", m.PermissionHandler.GetByID)
 
-		r.Post("/createpermission", m.PermissionHandler.Create)
 	})
 
 	if err := chi.Walk(r, func(

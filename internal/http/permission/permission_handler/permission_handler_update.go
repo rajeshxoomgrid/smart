@@ -14,10 +14,7 @@ import (
 	permissiondto "github.com/rajeshbond/smart/internal/http/permission/permission_dto"
 )
 
-func (h *PermissionHandler) Update(
-	w http.ResponseWriter,
-	r *http.Request,
-) {
+func (h *PermissionHandler) UpdatePermissionRequest(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
@@ -25,16 +22,9 @@ func (h *PermissionHandler) Update(
 	// Get ID
 	// --------------------------------------------------
 
-	idString := chi.URLParam(
-		r,
-		"id",
-	)
+	idString := chi.URLParam(r, "id")
 
-	id, err := strconv.ParseInt(
-		idString,
-		10,
-		64,
-	)
+	id, err := strconv.ParseInt(idString, 10, 64)
 
 	if err != nil || id <= 0 {
 		response.Error(
@@ -52,7 +42,11 @@ func (h *PermissionHandler) Update(
 	claims, err := auth.MustUserClaims(ctx)
 
 	if err != nil {
-		response.Error(w, http.StatusUnauthorized, response.NotAuthorized)
+		response.Error(
+			w,
+			http.StatusUnauthorized,
+			response.NotAuthorized,
+		)
 		return
 	}
 
@@ -65,9 +59,9 @@ func (h *PermissionHandler) Update(
 		return
 	}
 
-	//----------------------------------------------------------------------
+	// --------------------------------------------------
 	// Authorization
-	//----------------------------------------------------------------------
+	// --------------------------------------------------
 
 	if !permission.IsXoomUser(claims.Role) {
 		response.Error(
@@ -77,6 +71,7 @@ func (h *PermissionHandler) Update(
 		)
 		return
 	}
+
 	// --------------------------------------------------
 	// Decode request
 	// --------------------------------------------------
@@ -84,7 +79,6 @@ func (h *PermissionHandler) Update(
 	var req permissiondto.UpdatePermissionRequest
 
 	decoder := json.NewDecoder(r.Body)
-
 	decoder.DisallowUnknownFields()
 
 	if err := decoder.Decode(&req); err != nil {
@@ -106,11 +100,11 @@ func (h *PermissionHandler) Update(
 	// Service
 	// --------------------------------------------------
 
-	// permission, err := h.PermissionService.Update(
-	// 	ctx,
-	// 	id,
-	// 	&req,
-	// )
+	permission, err := h.PermissionService.Update(
+		ctx,
+		id,
+		&req,
+	)
 
 	if err != nil {
 
@@ -128,7 +122,6 @@ func (h *PermissionHandler) Update(
 			http.StatusInternalServerError,
 			err.Error(),
 		)
-
 		return
 	}
 
@@ -136,12 +129,9 @@ func (h *PermissionHandler) Update(
 	// Response
 	// --------------------------------------------------
 
-	// response.JSON(
-	// 	w,
-	// 	http.StatusOK,
-	// 	"Testing"},
-	// 	// permissiondto.PermissionResponse{
-	// 	// 	Data: permission.CanCreateDeprtment(),
-	// 	// },
-	// )
+	response.JSON(
+		w,
+		http.StatusOK,
+		permission,
+	)
 }

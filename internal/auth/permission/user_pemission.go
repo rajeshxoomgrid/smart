@@ -35,8 +35,11 @@ func CanCreateDeprtment(role string) bool {
 	switch strings.ToLower(role) {
 	case
 		RoleSuperAdmin,
-		RoleAdminTenant:
-
+		RoleAdminTenant,
+		RoleXoomUser,
+		RoleTenantOwner,
+		RolePlantHeader,
+		RoleTenantAdmin:
 		return true
 	}
 

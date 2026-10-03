@@ -114,3 +114,89 @@ func (h *PermissionHandler) GetByID(
 		},
 	)
 }
+
+func (h *PermissionHandler) GetPermissionByUserID(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+
+	ctx := r.Context()
+
+	claims, err := auth.MustUserClaims(ctx)
+
+	if err != nil {
+		response.Error(w, http.StatusUnauthorized, response.NotAuthorized)
+		return
+	}
+
+	if claims == nil {
+		response.Error(
+			w,
+			http.StatusUnauthorized,
+			"unauthorized",
+		)
+		return
+	}
+	// --------------------------------------------------
+	// Get ID from URL
+	// --------------------------------------------------
+
+	idString := chi.URLParam(
+		r,
+		"id",
+	)
+
+	id, err := strconv.ParseInt(
+		idString,
+		10,
+		64,
+	)
+
+	if err != nil || id <= 0 {
+		response.Error(
+			w,
+			http.StatusBadRequest,
+			"invalid permission id",
+		)
+		return
+	}
+
+	// --------------------------------------------------
+	// Service
+	// --------------------------------------------------
+
+	permission, err := h.PermissionService.GetPermissionByUserID(
+		ctx,
+		id,
+	)
+
+	if err != nil {
+
+		if errors.Is(err, sql.ErrNoRows) {
+			response.Error(
+				w,
+				http.StatusNotFound,
+				"permission not found",
+			)
+			return
+		}
+
+		response.Error(
+			w,
+			http.StatusInternalServerError,
+			err.Error(),
+		)
+
+		return
+	}
+
+	// --------------------------------------------------
+	// Response
+	// --------------------------------------------------
+
+	response.JSON(
+		w,
+		http.StatusOK,
+		permission,
+	)
+}
