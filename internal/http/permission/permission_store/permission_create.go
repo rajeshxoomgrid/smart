@@ -6,11 +6,17 @@ import (
 	permissiondto "github.com/rajeshbond/smart/internal/http/permission/permission_dto"
 )
 
-func (s *PermissionStore) Create(ctx context.Context, req *permissiondto.CreatePermissionRequest) (*permissiondto.Permission, error) {
+// ============================================================
+// CREATE PERMISSION
+// ============================================================
+
+func (s *PermissionStore) Create(
+	ctx context.Context,
+	req *permissiondto.CreatePermissionRequest,
+) (*permissiondto.Permission, error) {
 
 	query := `
-		INSERT INTO public.permission
-		(
+		INSERT INTO public.permission (
 			user_id,
 			role_id,
 			department_id,
@@ -22,8 +28,7 @@ func (s *PermissionStore) Create(ctx context.Context, req *permissiondto.CreateP
 			delete_perm,
 			created_by
 		)
-		VALUES
-		(
+		VALUES (
 			$1,
 			$2,
 			$3,
@@ -55,7 +60,7 @@ func (s *PermissionStore) Create(ctx context.Context, req *permissiondto.CreateP
 			is_deleted
 	`
 
-	result := &permissiondto.Permission{}
+	p := &permissiondto.Permission{}
 
 	err := s.db.QueryRowContext(
 		ctx,
@@ -71,29 +76,28 @@ func (s *PermissionStore) Create(ctx context.Context, req *permissiondto.CreateP
 		req.DeletePerm,
 		req.CreatedBy,
 	).Scan(
-		&result.ID,
-		&result.UserID,
-		&result.RoleID,
-		&result.DepartmentID,
-		&result.AllPerm,
-		&result.CreatePerm,
-		&result.ReadPerm,
-		&result.UpdatePerm,
-		&result.TempUpdatePerm,
-		&result.DeletePerm,
-		&result.CreatedBy,
-		&result.UpdatedBy,
-		&result.DeletedBy,
-		&result.CreatedAt,
-		&result.UpdatedAt,
-		&result.DeletedAt,
-		&result.IsDeleted,
+		&p.ID,
+		&p.UserID,
+		&p.RoleID,
+		&p.DepartmentID,
+		&p.AllPerm,
+		&p.CreatePerm,
+		&p.ReadPerm,
+		&p.UpdatePerm,
+		&p.TempUpdatePerm,
+		&p.DeletePerm,
+		&p.CreatedBy,
+		&p.UpdatedBy,
+		&p.DeletedBy,
+		&p.CreatedAt,
+		&p.UpdatedAt,
+		&p.DeletedAt,
+		&p.IsDeleted,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return result, nil
+	return p, nil
 }
-

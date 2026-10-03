@@ -11,6 +11,7 @@ func IsXoomUser(roler string) bool {
 		RoleXoomAdmin,
 		RoleXoomUser,
 		RoleTenantOwner,
+		RolePlantHeader,
 		RoleTenantAdmin:
 		return true
 	}

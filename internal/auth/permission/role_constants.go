@@ -17,6 +17,7 @@ const (
 	RoleAdminTenant = "admintenant"
 	RoleTenantOwner = "tenantowner"
 	RoleTenantUser  = "tenantuser"
+	RolePlantHeader = "plantheader"
 
 	RoleDistributorAdmin   = "distributoradmin"
 	RoleDistributorService = "distributorservice"

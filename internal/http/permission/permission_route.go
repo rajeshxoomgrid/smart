@@ -23,7 +23,7 @@ func (m *PermissionModule) Router() chi.Router {
 		r.Use(auth.Authenticator(m.tokenAuth))
 		r.Use(auth.UserContextInjector)
 
-		// r.Post("/createassembly", m.Handler.CreateAssembly)
+		r.Post("/createpermission", m.PermissionHandler.Create)
 	})
 
 	if err := chi.Walk(r, func(

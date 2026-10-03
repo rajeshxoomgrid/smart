@@ -11,7 +11,7 @@ type Permission struct {
 
 	UserID       int64 `json:"user_id"`
 	RoleID       int64 `json:"role_id"`
-	DepartmentID int64 `json:"department_id"`
+	DepartmentID int64 `json:"dept_id"`
 
 	AllPerm        bool `json:"all_perm"`
 	CreatePerm     bool `json:"create_perm"`
@@ -38,7 +38,7 @@ type Permission struct {
 type CreatePermissionRequest struct {
 	UserID       int64 `json:"user_id" validate:"required"`
 	RoleID       int64 `json:"role_id" validate:"required"`
-	DepartmentID int64 `json:"department_id" validate:"required"`
+	DepartmentID int64 `json:"dept_id" validate:"required"`
 
 	AllPerm        bool `json:"all_perm"`
 	CreatePerm     bool `json:"create_perm"`
@@ -57,7 +57,7 @@ type CreatePermissionRequest struct {
 type UpdatePermissionRequest struct {
 	UserID       int64 `json:"user_id" validate:"required"`
 	RoleID       int64 `json:"role_id" validate:"required"`
-	DepartmentID int64 `json:"department_id" validate:"required"`
+	DepartmentID int64 `json:"dept_id" validate:"required"`
 
 	AllPerm        bool `json:"all_perm"`
 	CreatePerm     bool `json:"create_perm"`
