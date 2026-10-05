@@ -23,6 +23,7 @@ import (
 	departmentmaster "github.com/rajeshbond/smart/internal/http/department_master"
 	devicedata "github.com/rajeshbond/smart/internal/http/device/device_data"
 	devicemaster "github.com/rajeshbond/smart/internal/http/device/device_master"
+	immhttp "github.com/rajeshbond/smart/internal/http/imm"
 	internalsetup "github.com/rajeshbond/smart/internal/http/internal_setup"
 	machine "github.com/rajeshbond/smart/internal/http/machine_imm"
 	"github.com/rajeshbond/smart/internal/http/mold"
@@ -161,6 +162,14 @@ func NewRouter(app *App) http.Handler {
 	r.Mount("/device-master", deviceMasterModule.Routes())
 
 	// MQTT Commands ----->(MQTT)
+
+	// Command to IMM modules
+	immhttpModule := immhttp.NewImmHttpModule(
+		app.DB.SQLDB,
+		tokenAuth,
+	)
+
+	r.Mount("/api/imm/command", immhttpModule.Router())
 
 	commandModule := command.NewModule(app.MQTTClient)
 	r.Mount("/api/v1/assembly-command", commandModule.Router())
