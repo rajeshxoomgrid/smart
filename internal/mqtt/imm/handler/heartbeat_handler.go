@@ -72,12 +72,14 @@ func (h *HeartbeatHandler) HeartbeatHandler() paho.MessageHandler {
 		// --------------------------------------------------------
 
 		log.Printf(
-			"💓 IMM Heartbeat | Device=%s | Machine=%s | Tenant=%d | Status=%s | RSSI=%d",
+			"💓 IMM Heartbeat |Event = %s | Device=%s | Machine=%s | Tenant=%d | Status=%s | RSSI=%d | Mold_no=%s",
+			req.EventID,
 			req.DeviceID,
 			req.MachineID,
 			req.TenantID,
 			req.Status,
 			req.RSSI,
+			req.MoldNo,
 		)
 
 		// --------------------------------------------------------
