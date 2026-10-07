@@ -12,4 +12,5 @@ var (
 	ErrInvalidACK              = errors.New("invalid mold change acknowledgement")
 	ErrMoldMismatch            = errors.New("acknowledged mold number does not match requested mold number")
 	ErrCommandAlreadyCompleted = errors.New("Command Already completed")
+	
 )

@@ -30,4 +30,6 @@ type MoldChangeCommand struct {
 	Status          string
 	FailureReason   string
 	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	ConfirmedAt     time.Time
 }

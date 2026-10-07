@@ -307,3 +307,63 @@ func (s *ImmHttpStore) MarkExpiredPendingFailed(
 
 	return result.RowsAffected()
 }
+
+func (s *ImmHttpStore) GetLatestCommand(
+	ctx context.Context,
+	tenantID int64,
+	deviceID string,
+) (*immdto.MoldChangeCommand, error) {
+
+	const query = `
+		SELECT
+			id,
+			tenant_id,
+			user_id,
+			device_id,
+			machine_id,
+			COALESCE(old_mold_no, ''),
+			requested_mold_no,
+			status,
+			COALESCE(failure_reason, ''),
+			created_at,
+			updated_at,
+			confirmed_at
+		FROM imm_mold_change_command
+		WHERE tenant_id = $1
+		  AND device_id = $2
+		ORDER BY id DESC
+		LIMIT 1
+	`
+
+	var command immdto.MoldChangeCommand
+
+	err := s.db.QueryRowContext(
+		ctx,
+		query,
+		tenantID,
+		deviceID,
+	).Scan(
+		&command.ID,
+		&command.TenantID,
+		&command.UserID,
+		&command.DeviceID,
+		&command.MachineID,
+		&command.OldMoldNo,
+		&command.RequestedMoldNo,
+		&command.Status,
+		&command.FailureReason,
+		&command.CreatedAt,
+		&command.UpdatedAt,
+		&command.ConfirmedAt,
+	)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &command, nil
+}

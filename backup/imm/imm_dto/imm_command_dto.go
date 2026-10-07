@@ -54,3 +54,18 @@ type SetMoldNoMQTTAck struct {
 	MoldNo   string `json:"mold_no,omitempty"`
 	Error    string `json:"error,omitempty"`
 }
+
+// Mold change Response
+
+type MoldChangeStatusResponse struct {
+	CommandID       int64   `json:"command_id"`
+	DeviceID        string  `json:"device_id"`
+	MachineID       string  `json:"machine_id"`
+	OldMoldNo       *string `json:"old_mold_no,omitempty"`
+	RequestedMoldNo string  `json:"requested_mold_no"`
+	Status          string  `json:"status"`
+	FailureReason   *string `json:"failure_reason,omitempty"`
+	CreatedAt       string  `json:"created_at"`
+	UpdatedAt       string  `json:"updated_at"`
+	ConfirmedAt     *string `json:"confirmed_at,omitempty"`
+}
