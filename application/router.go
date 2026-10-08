@@ -20,12 +20,14 @@ import (
 	"github.com/rajeshbond/smart/cmd/service"
 	assemblymaster "github.com/rajeshbond/smart/internal/http/assembly_master"
 	"github.com/rajeshbond/smart/internal/http/command"
+	counterreset "github.com/rajeshbond/smart/internal/http/counter_reset"
 	departmentmaster "github.com/rajeshbond/smart/internal/http/department_master"
 	devicedata "github.com/rajeshbond/smart/internal/http/device/device_data"
 	devicemaster "github.com/rajeshbond/smart/internal/http/device/device_master"
+	"github.com/rajeshbond/smart/internal/http/imm"
 	internalsetup "github.com/rajeshbond/smart/internal/http/internal_setup"
 	machine "github.com/rajeshbond/smart/internal/http/machine_imm"
-	"github.com/rajeshbond/smart/internal/http/mold"
+	moldchangeregister "github.com/rajeshbond/smart/internal/http/mold_change_register"
 	"github.com/rajeshbond/smart/internal/http/permission"
 	"github.com/rajeshbond/smart/internal/http/shift"
 	shiftslot "github.com/rajeshbond/smart/internal/http/shift_slot"
@@ -135,10 +137,25 @@ func NewRouter(app *App) http.Handler {
 	productionLogModule := devicedata.NewModule(app.DB.SQLDB, tokenAuth, shiftModule.Store)
 	r.Mount("/proddata", productionLogModule.Router())
 
+	// Imm Route
+
+	immModule := imm.NewImmModule(app.DB.SQLDB, tokenAuth)
+	r.Mount("/imm", immModule.Router())
+
+	// Mold change route
+
+	moldChangeModule := moldchangeregister.NewMoldChangeModule(app.DB.SQLDB, tokenAuth)
+	r.Mount("/moldchange", moldChangeModule.Router())
+
+	// Counter Reset Route
+
+	counterresetModule := counterreset.NewCounterResetModule(app.DB.SQLDB, tokenAuth)
+	r.Mount("/immcountreset", counterresetModule.Router())
+
 	// Mold Master
 
-	moldModule := mold.NewMoldModeule(app.DB.SQLDB, tokenAuth)
-	r.Mount("/mold", moldModule.Router())
+	// moldModule := mold.NewMoldModeule(app.DB.SQLDB, tokenAuth)
+	// r.Mount("/mold", moldModule.Router())
 
 	// Imm Machine
 
