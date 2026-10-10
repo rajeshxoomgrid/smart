@@ -211,6 +211,7 @@ func NewRouter(app *App) http.Handler {
 // 		middlewares ...func(http.Handler) http.Handler,
 // 	) error {
 // 		log.Printf("ROOT ROUTE: %-6s %s", method, route)
+
 // 		return nil
 // 	}); err != nil {
 // 		log.Printf("Root route walk error: %v", err)
