@@ -35,7 +35,7 @@ func (s *ImmService) Save(
 	if req.Timestamp.IsZero() {
 		return nil, fmt.Errorf("production_time is required")
 	}
-	// fmt.Println("<-----------------------------------Service-------------------------------------------->")
+
 	return s.ImmProductionStore.Save(ctx, req)
 
 	// return nil, nil
