@@ -9,13 +9,13 @@ import (
 // ============================================================
 
 type ImmService struct {
-	immStore *store.ImmProductionStore
+	ImmProductionStore *store.ImmProductionStore
 }
 
 func NewImmService(
 	immStore *store.ImmProductionStore,
 ) ImmService {
 	return ImmService{
-		immStore: immStore,
+		ImmProductionStore: immStore,
 	}
 }

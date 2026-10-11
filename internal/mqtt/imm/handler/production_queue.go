@@ -1,65 +1,34 @@
 package handler
 
 import (
-	"errors"
+	"log"
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
 )
 
-// ============================================================
-// ERRORS
-// ============================================================
-
-var (
-	ErrProductionHandlerClosed = errors.New(
-		"production handler is closed",
-	)
-
-	ErrProductionQueueFull = errors.New(
-		"production queue is full",
-	)
-)
-
-// ============================================================
-// MQTT MESSAGE HANDLER
-// ============================================================
+// var (
+// 	ErrProductionHandlerClosed = errors.New("production handler is closed")
+// 	ErrProductionQueueFull     = errors.New("production queue is full")
+// )
 
 func (h *ProductionHandler) ProductionHandler() paho.MessageHandler {
-
-	return func(
-		client paho.Client,
-		msg paho.Message,
-	) {
-
+	return func(client paho.Client, msg paho.Message) {
 		if msg == nil {
+			log.Println("IMM Production message is nil")
 			return
 		}
 
 		h.receivedCount.Add(1)
 
-		// ----------------------------------------------------
-		// Copy MQTT payload
-		// ----------------------------------------------------
+		job := productionJob{
+			payload: append([]byte(nil), msg.Payload()...),
+			client:  client,
+		}
 
-		payload := make(
-			[]byte,
-			len(msg.Payload()),
-		)
-
-		copy(
-			payload,
-			msg.Payload(),
-		)
-
-		// ----------------------------------------------------
-		// Queue
-		// ----------------------------------------------------
-
-		if err := h.enqueue(payload); err != nil {
-
+		if err := h.enqueue(job); err != nil {
 			h.droppedCount.Add(1)
-
+			log.Printf("IMM Production Enqueue Failed | Error=%v", err)
 			return
 		}
 
@@ -67,64 +36,25 @@ func (h *ProductionHandler) ProductionHandler() paho.MessageHandler {
 	}
 }
 
-// ============================================================
-// ENQUEUE
-// ============================================================
-
-func (h *ProductionHandler) enqueue(
-	payload []byte,
-) error {
-
+func (h *ProductionHandler) enqueue(job productionJob) error {
 	h.mu.RLock()
+	defer h.mu.RUnlock()
 
 	if !h.accepting {
-		h.mu.RUnlock()
 		return ErrProductionHandlerClosed
 	}
 
-	// --------------------------------------------------------
-	// Fast path
-	// --------------------------------------------------------
-
-	select {
-
-	case h.queue <- productionJob{
-		payload: payload,
-	}:
-
-		h.mu.RUnlock()
-
-		return nil
-
-	default:
-	}
-
-	h.mu.RUnlock()
-
-	// --------------------------------------------------------
-	// Queue full - bounded wait
-	// --------------------------------------------------------
-
-	timer := time.NewTimer(
-		ProductionEnqueueTimeout,
-	)
-
+	timer := time.NewTimer(ProductionEnqueueTimeout)
 	defer timer.Stop()
 
 	select {
-
-	case h.queue <- productionJob{
-		payload: payload,
-	}:
-
+	case h.queue <- job:
 		return nil
 
 	case <-timer.C:
-
 		return ErrProductionQueueFull
 
 	case <-h.ctx.Done():
-
 		return ErrProductionHandlerClosed
 	}
 }

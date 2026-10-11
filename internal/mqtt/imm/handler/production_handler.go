@@ -6,20 +6,15 @@ import (
 	"sync"
 	"sync/atomic"
 
+	paho "github.com/eclipse/paho.mqtt.golang"
+
 	service "github.com/rajeshbond/smart/internal/mqtt/imm/service"
 )
 
-// ============================================================
-// PRODUCTION JOB
-// ============================================================
-
 type productionJob struct {
 	payload []byte
+	client  paho.Client
 }
-
-// ============================================================
-// PRODUCTION HANDLER
-// ============================================================
 
 type ProductionHandler struct {
 	service service.ImmService
@@ -46,21 +41,14 @@ type ProductionHandler struct {
 	supervisorWG sync.WaitGroup
 }
 
-// ============================================================
-// CONSTRUCTOR
-// ============================================================
-
 func NewProductionHandler(
 	productionService *service.ImmService,
 ) *ProductionHandler {
-
 	if productionService == nil {
 		panic("productionService cannot be nil")
 	}
 
-	ctx, cancel := context.WithCancel(
-		context.Background(),
-	)
+	ctx, cancel := context.WithCancel(context.Background())
 
 	h := &ProductionHandler{
 		service:   *productionService,
@@ -70,38 +58,37 @@ func NewProductionHandler(
 		accepting: true,
 	}
 
-	// --------------------------------------------------------
-	// Start minimum workers
-	// --------------------------------------------------------
-
 	for i := 0; i < MinProductionWorkers; i++ {
 		h.startWorker()
 	}
 
-	// --------------------------------------------------------
-	// Start worker supervisor
-	// --------------------------------------------------------
-
 	h.supervisorWG.Add(1)
-
 	go h.workerSupervisor()
 
-	// --------------------------------------------------------
-	// Start statistics logger
-	// --------------------------------------------------------
-
 	h.supervisorWG.Add(1)
-
 	go h.statisticsLogger()
 
-	log.Println("============================================================")
-	log.Println("IMM Production Handler Started")
-	log.Printf("Queue Size      : %d", ProductionQueueSize)
-	log.Printf("Minimum Workers : %d", MinProductionWorkers)
-	log.Printf("Maximum Workers : %d", MaxProductionWorkers)
-	log.Printf("DB Timeout      : %v", ProductionDBTimeout)
-	log.Printf("DB Retries      : %d", ProductionSaveRetries)
-	log.Println("============================================================")
+	log.Printf(
+		"IMM Production Handler Started | Queue=%d | MinWorkers=%d | MaxWorkers=%d",
+		ProductionQueueSize,
+		MinProductionWorkers,
+		MaxProductionWorkers,
+	)
 
 	return h
+}
+
+// Shutdown stops accepting new messages and stops background workers.
+// This retains the original cancellation-based shutdown behavior.
+func (h *ProductionHandler) Shutdown() {
+	h.mu.Lock()
+	h.accepting = false
+	h.mu.Unlock()
+
+	h.cancel()
+
+	h.supervisorWG.Wait()
+	h.workersWG.Wait()
+
+	log.Println("IMM Production Handler Shutdown Complete")
 }

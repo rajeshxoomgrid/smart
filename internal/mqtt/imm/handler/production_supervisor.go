@@ -5,90 +5,75 @@ import (
 	"time"
 )
 
-// ============================================================
-// WORKER SUPERVISOR
-// ============================================================
-
 func (h *ProductionHandler) workerSupervisor() {
-
 	defer h.supervisorWG.Done()
 
-	ticker := time.NewTicker(
-		WorkerScaleInterval,
-	)
-
+	ticker := time.NewTicker(WorkerScaleInterval)
 	defer ticker.Stop()
 
 	for {
-
 		select {
-
 		case <-ticker.C:
-
 			h.scaleWorkers()
 
 		case <-h.ctx.Done():
-
 			return
 		}
 	}
 }
 
-// ============================================================
-// SCALE WORKERS
-// ============================================================
-
 func (h *ProductionHandler) scaleWorkers() {
-
 	queueLength := len(h.queue)
-
 	queueCapacity := cap(h.queue)
 
-	if queueCapacity == 0 {
+	if queueCapacity == 0 || queueLength == 0 {
 		return
 	}
 
-	workers := int(
-		h.workerCount.Load(),
-	)
+	h.mu.RLock()
+	accepting := h.accepting
+	h.mu.RUnlock()
 
-	if workers < MinProductionWorkers {
-		workers = MinProductionWorkers
-	}
-
-	if queueLength == 0 {
+	if !accepting || h.ctx.Err() != nil {
 		return
 	}
 
-	utilization :=
-		float64(queueLength) /
-			float64(queueCapacity)
+	workers := int(h.workerCount.Load())
+	if workers >= MaxProductionWorkers {
+		return
+	}
 
-	targetWorkers := workers
+	utilization := float64(queueLength) / float64(queueCapacity)
+
+	addWorkers := 0
 
 	switch {
-
 	case utilization >= 0.75:
-		targetWorkers = workers + 4
-
+		addWorkers = 4
 	case utilization >= 0.50:
-		targetWorkers = workers + 3
-
+		addWorkers = 3
 	case utilization >= 0.25:
-		targetWorkers = workers + 2
-
+		addWorkers = 2
 	case utilization >= 0.10:
-		targetWorkers = workers + 1
+		addWorkers = 1
 	}
 
+	targetWorkers := workers + addWorkers
 	if targetWorkers > MaxProductionWorkers {
 		targetWorkers = MaxProductionWorkers
 	}
 
 	for workers < targetWorkers {
+		h.mu.RLock()
+		accepting = h.accepting
+		h.mu.RUnlock()
 
+		if !accepting || h.ctx.Err() != nil {
+			return
+		}
+
+		// startWorker increments workerCount itself.
 		h.startWorker()
-
 		workers++
 
 		log.Printf(

@@ -9,28 +9,23 @@ import (
 	dto "github.com/rajeshbond/smart/internal/mqtt/imm/dto"
 )
 
-// ============================================================
-// SAVE WITH RETRY
-// ============================================================
-
 func (h *ProductionHandler) saveWithRetry(
 	req *dto.ProductionDTO,
 ) error {
-
 	var lastErr error
 
 	for attempt := 1; attempt <= ProductionSaveRetries; attempt++ {
+		if err := h.ctx.Err(); err != nil {
+			return fmt.Errorf("production handler stopped: %w", err)
+		}
 
 		ctx, cancel := context.WithTimeout(
-			context.Background(),
+			h.ctx,
 			ProductionDBTimeout,
 		)
 
-		err := h.service.Save(
-			ctx,
-			req,
-		)
-
+		// Your existing Save method returns two values.
+		_, err := h.service.Save(ctx, req)
 		cancel()
 
 		if err == nil {
@@ -53,19 +48,14 @@ func (h *ProductionHandler) saveWithRetry(
 			err,
 		)
 
-		delay := ProductionRetryDelay *
-			time.Duration(attempt)
-
-		timer := time.NewTimer(delay)
+		timer := time.NewTimer(
+			ProductionRetryDelay * time.Duration(attempt),
+		)
 
 		select {
-
 		case <-timer.C:
-
 		case <-h.ctx.Done():
-
 			timer.Stop()
-
 			return fmt.Errorf(
 				"handler shutdown during retry: %w",
 				h.ctx.Err(),
