@@ -20,9 +20,9 @@ func NewImmProductionStore(
 	db *sql.DB,
 ) *ImmProductionStore {
 
-	if db == nil {
-		panic("IMM production store database connection cannot be nil")
-	}
+	// if db == nil {
+	// 	panic("IMM production store database connection cannot be nil")
+	// }
 
 	return &ImmProductionStore{
 		db: db,

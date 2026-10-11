@@ -9,19 +9,7 @@ import (
 	"github.com/rajeshbond/smart/internal/mqtt/imm/dto"
 )
 
-type ProductionStore struct {
-	db *sql.DB
-}
-
-func NewProductionStore(db *sql.DB) *ProductionStore {
-	if db == nil {
-		panic("production database connection cannot be nil")
-	}
-
-	return &ProductionStore{db: db}
-}
-
-func (s *ProductionStore) Save(
+func (s *ImmProductionStore) Save(
 	ctx context.Context,
 	req *dto.ProductionDTO,
 ) (*dto.ProductionResponseDTO, error) {
@@ -29,6 +17,9 @@ func (s *ProductionStore) Save(
 	// 1. Validate store and request
 	// ---------------------------------------------------------
 
+	fmt.Println("=============================================================================")
+	fmt.Println("Inside the save layer -===================================")
+	fmt.Println("=============================================================================")
 	if s == nil || s.db == nil {
 		return nil, fmt.Errorf("production database connection is nil")
 	}
@@ -199,11 +190,16 @@ func (s *ProductionStore) Save(
 
 	if err := tx.Commit(); err != nil {
 		return nil, fmt.Errorf(
-			"commit production record: %w",
+			"commit production record====================================>: %w",
 			err,
 		)
 	}
 
+	fmt.Println("============================>TRANSACTION COMMITTED SUCCESSFULLY TO DB")
+
+	fmt.Println("=================================================>")
+	fmt.Println(response)
+	fmt.Println("=================================================>")
 	return response, nil
 }
 
