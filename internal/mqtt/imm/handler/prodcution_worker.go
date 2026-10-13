@@ -237,11 +237,12 @@ func (h *ProductionHandler) processProduction(
 	h.processedCount.Add(1)
 
 	log.Printf(
-		"IMM Production Saved | Worker=%d | EventID=%s | Device=%s | Duration=%v",
+		"IMM Production Saved | Worker=%d | EventID=%s | Device=%s | Duration=%v | CycleTime = %f",
 		workerID,
 		req.EventID,
 		req.DeviceID,
 		time.Since(start),
+		req.CycleTimeSec,
 	)
 
 	// Publish ACK only after a successful save.
