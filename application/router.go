@@ -28,6 +28,7 @@ import (
 	internalsetup "github.com/rajeshbond/smart/internal/http/internal_setup"
 	machine "github.com/rajeshbond/smart/internal/http/machine_imm"
 	moldchangeregister "github.com/rajeshbond/smart/internal/http/mold_change_register"
+	"github.com/rajeshbond/smart/internal/http/part"
 	"github.com/rajeshbond/smart/internal/http/permission"
 	"github.com/rajeshbond/smart/internal/http/shift"
 	shiftslot "github.com/rajeshbond/smart/internal/http/shift_slot"
@@ -141,6 +142,11 @@ func NewRouter(app *App) http.Handler {
 
 	immModule := imm.NewImmModule(app.DB.SQLDB, tokenAuth)
 	r.Mount("/imm", immModule.Router())
+
+	// Part Route
+
+	partModule := part.NewPartModule(app.DB.SQLDB, tokenAuth)
+	r.Mount("/part", partModule.Router())
 
 	// Mold change route
 

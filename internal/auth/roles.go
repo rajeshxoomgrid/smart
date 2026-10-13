@@ -107,8 +107,8 @@ type Role string
 func IsTenatAdminRole(reqRole string) bool {
 	fmt.Print("Inside isTenanat Admin ", reqRole)
 	allowedRoles := map[string]struct{}{
-		// "tenantadmin": {},
 		"tenantadmin": {},
+		// "tenantadmin": {},
 		"tenantowner": {},
 	}
 

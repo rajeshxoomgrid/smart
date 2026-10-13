@@ -22,9 +22,8 @@ type MQTTHandlers struct {
 // ============================================================
 
 type Module struct {
-	Store   *store.ImmProductionStore
-	Service service.ImmService
-
+	Store    *store.ImmProductionStore
+	Service  service.ImmService
 	Handlers MQTTHandlers
 }
 

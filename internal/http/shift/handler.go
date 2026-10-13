@@ -2,6 +2,7 @@ package shift
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -38,6 +39,8 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, http.StatusUnauthorized, response.NotAuthorized)
 		return
 	}
+
+	fmt.Println("=============================>", claims)
 
 	if !auth.IsTenatAdminRole(claims.Role) {
 		response.Error(w, http.StatusUnauthorized, response.NotAuthorized)
