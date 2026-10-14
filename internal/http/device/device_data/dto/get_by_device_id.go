@@ -6,6 +6,7 @@ type GetProductionRequest struct {
 	TenantID string `json:"tenant_id"`
 	DeviceID string `json:"device_id"`
 	Station  string `json:"station,omitempty"`
+	Variant  string `json:"variant,omitempty"`
 	Limit    int    `json:"limit"`
 }
 
@@ -49,6 +50,7 @@ type ProductionResponse struct {
 	DeviceID   string `json:"device_id"`
 	MachineID  string `json:"machine_id"`
 	Station    string `json:"station"`
+	Variant    string `json:"variant"`
 
 	ProductionCount int64 `json:"production_count"`
 

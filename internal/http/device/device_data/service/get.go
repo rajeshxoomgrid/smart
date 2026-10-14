@@ -13,11 +13,107 @@ func (s *Service) GetProductionLogByTenantIDAndDeviceID(ctx context.Context, req
 	return s.Store.GetByTenantAndDeviceID(ctx, req)
 }
 
-func (s *Service) GetProduction(
-	ctx context.Context,
-	req dto.GetProductionRequest,
-	tenantCode int64,
-) (*dto.ProductionResponse, error) {
+func (s *Service) GetProduction(ctx context.Context, req dto.GetProductionRequest, tenantCode int64) (*dto.ProductionResponse, error) {
+
+	// Latest production matching device, station, and variant.
+	item, err := s.Store.GetTenantCountByDevice(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if item == nil {
+		return nil, fmt.Errorf("production data not found")
+	}
+
+	istProductionTime := utils.ToISTNew(item.ProductionTime)
+
+	// Shift information.
+	shift, err := s.shiftProvider.GetShiftByProductionTime(
+		ctx,
+		tenantCode,
+		istProductionTime,
+	)
+	if err != nil {
+		log.Println("Shift Lookup Error:", err)
+		return nil, err
+	}
+
+	if shift == nil {
+		return nil, fmt.Errorf("shift not found")
+	}
+
+	// First counter for the current shift.
+	firstShiftCount, err := s.Store.GetFirstShiftProductionCount(
+		ctx,
+		req.TenantID,
+		req.DeviceID,
+		req.Station,
+		req.Variant,
+		shift.ShiftStart,
+		shift.ShiftEnd,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Calculate shift production.
+	currentProductionCount := item.ProductionCount
+
+	item.ProductionCount = currentProductionCount - firstShiftCount
+	if item.ProductionCount < 0 {
+		item.ProductionCount = 0
+	}
+
+	item.ShiftName = shift.ShiftName
+
+	// Shift OEE.
+	item.OEE = CalculateLiveOEE(
+		shift.ShiftStart,
+		item.ProductionTime,
+		item.ProductionCount,
+	)
+
+	// Production day information.
+	dayInfo, err := s.shiftProvider.GetProductionDay(
+		ctx,
+		tenantCode,
+		istProductionTime,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// First counter for the production day.
+	dayFirstCount, err := s.Store.GetFirstDayProductionCount(
+		ctx,
+		req.TenantID,
+		req.DeviceID,
+		req.Station,
+		req.Variant,
+		dayInfo.DayStart,
+		dayInfo.DayEnd,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Calculate daily production.
+	item.DayProduction = currentProductionCount - dayFirstCount
+	if item.DayProduction < 0 {
+		item.DayProduction = 0
+	}
+
+	// Daily OEE.
+	item.DayOEE = CalculateLiveOEE(
+		dayInfo.DayStart,
+		item.ProductionTime,
+		item.DayProduction,
+	)
+
+	return item, nil
+}
+
+func (s *Service) GetProduction1(ctx context.Context, req dto.GetProductionRequest, tenantCode int64) (*dto.ProductionResponse, error) {
 
 	//-------------------------------------------------
 	// Latest Production
@@ -70,6 +166,7 @@ func (s *Service) GetProduction(
 		req.TenantID,
 		req.DeviceID,
 		req.Station,
+		req.Variant,
 		shift.ShiftStart,
 		shift.ShiftEnd,
 	)
@@ -121,6 +218,7 @@ func (s *Service) GetProduction(
 		req.TenantID,
 		req.DeviceID,
 		req.Station,
+		req.Variant,
 		dayInfo.DayStart,
 		dayInfo.DayEnd,
 	)
