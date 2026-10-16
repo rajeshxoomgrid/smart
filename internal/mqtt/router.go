@@ -10,6 +10,7 @@ import (
 	"github.com/rajeshbond/smart/internal/mqtt/imm"
 )
 
+// TokenAuth := service.GetTokenAuth()
 // ============================================================
 // REGISTER MQTT ROUTES
 // ============================================================
