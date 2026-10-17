@@ -9,6 +9,7 @@ const (
 
 	TopicAlarm = "factory/imm/alarm/+"
 
-	TopicCommand       = "factory/imm/command/"
+	TopicCommand = "factory/imm/command/"
+
 	TopicProductionAck = "factory/imm/ack/"
 )
