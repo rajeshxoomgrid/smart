@@ -1,6 +1,9 @@
 package helper
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 // ============================================================
 // BUILD SLOT START
@@ -115,3 +118,5 @@ func isOvernightShift(
 
 	return startMinutes > endMinutes
 }
+
+var ErrInvalidRequest = errors.New("invalid production request")

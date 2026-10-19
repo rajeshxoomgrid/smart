@@ -133,6 +133,7 @@ func ProductionLogViewwer(role string) bool {
 		RoleXoomUser,
 		RoleAdminTenant,
 		RoleTenantOperator,
+		RolePlantHeader,
 		RoleTenantUser:
 		return true
 	}

@@ -22,6 +22,8 @@ func (m *Module) Router() chi.Router {
 		r.Post("/assembly", m.Handler.GetProductionLogByTenantIDAndDeviceID)
 		r.Post("/assemblyshift", m.Handler.GetShiftProductionCount)
 		r.Post("/assemblyhr", m.Handler.SavePreviousHour)
+		r.Post("/yesterday", m.Handler.GetYesterdayProdcution)
+
 	})
 
 	return r

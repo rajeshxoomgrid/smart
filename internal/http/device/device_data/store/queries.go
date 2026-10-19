@@ -71,6 +71,60 @@ ORDER BY production_time DESC
 LIMIT 1;
 `
 
+const GetYesterdayProductionQuery = `
+WITH params AS (
+    SELECT $1::date AS production_date
+),
+time_ranges AS (
+    SELECT
+        'Complete Day' AS shift,
+        production_date + TIME '08:00:00' AS start_time,
+        production_date + INTERVAL '1 day'
+            + TIME '08:00:00' AS end_time,
+        1 AS sort_order
+    FROM params
+
+    UNION ALL
+
+    SELECT
+        'Shift A',
+        production_date + TIME '08:00:00',
+        production_date + TIME '20:00:00',
+        2
+    FROM params
+
+    UNION ALL
+
+    SELECT
+        'Shift B',
+        production_date + TIME '20:00:00',
+        production_date + INTERVAL '1 day'
+            + TIME '08:00:00',
+        3
+    FROM params
+)
+SELECT
+    tr.shift,
+    COALESCE(
+        MAX(apl.production_count)
+        - MIN(apl.production_count) + 1,
+        0
+    )::bigint AS production_count
+FROM time_ranges tr
+LEFT JOIN public.assembly_production_log apl
+    ON apl.production_time >= tr.start_time
+    AND apl.production_time < tr.end_time
+    AND apl.device_id = $2
+    AND ($3::text IS NULL OR apl.station = $3)
+    AND ($4::text IS NULL OR apl.variant = $4)
+GROUP BY
+    tr.shift,
+    tr.start_time,
+    tr.end_time,
+    tr.sort_order
+ORDER BY tr.sort_order;
+`
+
 // const GetFirstShiftProductionCount = `
 // SELECT production_count
 // FROM assembly_production_log
