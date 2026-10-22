@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -43,6 +44,10 @@ func (h *Handler) SavePreviousHour(
 	// ========================================================
 
 	claims, err := auth.MustUserClaims(ctx)
+
+	fmt.Println("<==========================================>")
+	fmt.Println("User Tenant ID--->", claims.TenantID)
+	fmt.Println("<==========================================>")
 
 	if err != nil {
 
