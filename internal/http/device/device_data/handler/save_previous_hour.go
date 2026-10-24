@@ -32,10 +32,7 @@ import (
 //
 // ============================================================
 
-func (h *Handler) SavePreviousHour(
-	w http.ResponseWriter,
-	r *http.Request,
-) {
+func (h *Handler) SavePreviousHour(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
@@ -145,4 +142,153 @@ func (h *Handler) SavePreviousHour(
 		http.StatusOK,
 		item,
 	)
+}
+
+func (h *Handler) NewPreviousHourly(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	// ========================================================
+	// AUTHENTICATION
+	// ========================================================
+
+	claims, err := auth.MustUserClaims(ctx)
+
+	if err != nil {
+
+		response.Error(
+			w,
+			http.StatusUnauthorized,
+			auth.UnAuthorised,
+		)
+
+		return
+	}
+
+	// ========================================================
+	// AUTHORIZATION
+	// ========================================================
+
+	if !permission.ProductionLogViewwer(claims.Role) {
+
+		response.Error(
+			w,
+			http.StatusForbidden,
+			auth.PermissionDenied.Error(),
+		)
+
+		return
+	}
+
+	var req dto.HrSaveProductionRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+
+		response.Error(
+			w,
+			http.StatusBadRequest,
+			err.Error(),
+		)
+
+		return
+	}
+
+	// response.JSON(
+	// 	w,
+	// 	http.StatusOK,
+	// 	map[string]interface{}{
+	// 		"tenant_id": claims.TenantID,
+	// 		"data":      req,
+	// 		"status":    "sucussfully completed",
+	// 	},
+	// )
+
+	// response.JSON(
+	// 	w,
+	// 	http.StatusOK,
+	// 	[]struct {
+	// 		TenantID int64       `json:"tenant_id"`
+	// 		Data     interface{} `json:"data"`
+	// 		Status   string      `json:"status"`
+	// 	}{
+	// 		{
+	// 			TenantID: claims.TenantID,
+	// 			Data:     req,
+	// 			Status:   "successfully completed",
+	// 		},
+	// 	},
+	// )
+
+	// response.JSON(
+	// 	w,
+	// 	http.StatusOK,
+	// 	map[string]interface{}{
+	// 		"result": []struct {
+	// 			TenantID int64       `json:"tenant_id"`
+	// 			Data     interface{} `json:"data"`
+	// 			Status   string      `json:"status"`
+	// 		}{
+	// 			{
+	// 				TenantID: claims.TenantID,
+	// 				Data:     req,
+	// 				Status:   "successfully completed",
+	// 			},
+	// 		},
+	// 	},
+	// )
+
+	// response.JSON(
+	// 	w,
+	// 	http.StatusOK,
+	// 	map[string]interface{}{
+	// 		"result": []struct {
+	// 			TenantID int64       `json:"tenant_id"`
+	// 			Data     interface{} `json:"data"`
+	// 			Status   string      `json:"status"`
+	// 		}{
+	// 			{
+	// 				TenantID: claims.TenantID,
+	// 				Data:     req,
+	// 				Status:   "successfully completed",
+	// 			},
+	// 		},
+	// 	},
+	// )
+
+	// result := map[string]interface{}{
+	// 	"result": []map[string]interface{}{
+	// 		{
+	// 			"tenant_id": claims.TenantID,
+	// 			"data":      req,
+	// 			"status":    "successfully completed",
+	// 		},
+	// 	},
+	// }
+
+	// result := []map[string]interface{}{
+	// 	{
+	// 		"tenant_id": claims.TenantID,
+	// 		"data":      req,
+	// 		"status":    "successfully completed",
+	// 	},
+	// }
+
+	result := map[string]interface{}{
+
+		"data": []map[string]interface{}{
+			{
+				"tenant_id": claims.TenantID,
+				"data":      []interface{}{req, req, req},
+			},
+		},
+		"status": "successfully completed",
+	}
+
+	// }
+
+	// result := map[string]interface{}{
+	// 	"tenant_id": claims.TenantID,
+	// 	"data":      req,
+	// 	"status":    "successfully completed",
+	// }
+	response.JSON(w, http.StatusOK, result)
 }
