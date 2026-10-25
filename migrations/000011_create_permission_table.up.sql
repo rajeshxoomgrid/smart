@@ -28,7 +28,7 @@ CREATE TABLE permission (
 
     CONSTRAINT fk_permission_role
         FOREIGN KEY (role_id)
-        REFERENCES role(id),
+        REFERENCES user_role(id),
 
     CONSTRAINT fk_permission_department
         FOREIGN KEY (department_id)

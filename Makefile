@@ -1,9 +1,16 @@
-include .env
+# include .env
 
+# export
+
+# MIGRATION_PATH=./migrations
+# DATABASE_URL=postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL)
+
+include .env
 export
 
 MIGRATION_PATH=./migrations
-DATABASE_URL=postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL)
+
+DATABASE_URL=postgres://$(DB_USER):$(DB_PASS)@$(strip $(DB_HOST)):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL)
 
 
 # ============================================================
