@@ -90,9 +90,16 @@ func (ser *Service) GetImmLatestProductionCount(ctx context.Context, req dto.Imm
 
 	item.DayProductionCount = item.DayProductionCount + 1
 
-	fmt.Println("===================================================")
-	fmt.Println(item.DayProductionCount)
-	fmt.Println("===================================================")
+	// Daily OEE.
+	item.DayOEE = CalculateLiveOEE(
+		dayInfo.DayStart,
+		item.ProductionTime,
+		item.DayProductionCount,
+	)
+
+	// fmt.Println("===================================================")
+	// fmt.Println(item.DayProductionCount)
+	// fmt.Println("===================================================")
 
 	return item, nil
 }
