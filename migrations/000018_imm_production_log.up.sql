@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS imm_production_log (
     device_id VARCHAR(100) NOT NULL,
     machine_id VARCHAR(100) NOT NULL,
 
-    mold_no VARCHAR(100) NOT NULL DEFAULT '',
+    part_name VARCHAR(100) NOT NULL DEFAULT '',
 
     production_count BIGINT NOT NULL DEFAULT 0,
     cycle_time_sec DOUBLE PRECISION NOT NULL DEFAULT 0,

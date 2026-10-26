@@ -125,6 +125,52 @@ GROUP BY
 ORDER BY tr.sort_order;
 `
 
+const GetLatestImmTenantCountByDeviceID = `
+SELECT
+    id,
+    event_id,
+    tenant_id,
+    device_id,
+    machine_id,
+    mold_no,
+    production_count,
+    cycle_time_sec,
+    production_time,
+    reset,
+    created_at,
+    updated_at
+FROM imm_production_log
+WHERE tenant_id = $1
+  AND device_id = $2
+  AND machine_id = $3
+ORDER BY production_time DESC, id DESC
+LIMIT $4
+`
+
+const GetImmshiftFirstProductionCount = `
+SELECT production_count
+FROM public.imm_production_log
+WHERE tenant_id = $1
+  AND device_id = $2
+  AND machine_id = $3
+  AND production_time >= $4
+  AND production_time < $5
+ORDER BY production_time ASC, id ASC
+LIMIT 1
+`
+
+const GetImmDayFirstProductionCount = `
+SELECT production_count
+    FROM public.imm_production_log
+    WHERE tenant_id = $1
+    AND device_id = $2
+    AND machine_id = $3
+    AND production_time >= $4
+    AND production_time < $5
+    ORDER BY production_time ASC, id ASC
+LIMIT 1
+`
+
 // const GetFirstShiftProductionCount = `
 // SELECT production_count
 // FROM assembly_production_log
