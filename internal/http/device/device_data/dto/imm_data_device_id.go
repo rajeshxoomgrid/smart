@@ -43,3 +43,10 @@ type ImmDataResponse struct {
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
+
+type ProductionLogResponse struct {
+	Data            []ImmDataResponse `json:"data"`
+	MinCycleTimeSec float64           `json:"min_cycle_time_sec"`
+	MaxCycleTimeSec float64           `json:"max_cycle_time_sec"`
+	AvgCycleTimeSec float64           `json:"avg_cycle_time_sec"`
+}

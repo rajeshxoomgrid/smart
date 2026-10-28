@@ -25,6 +25,7 @@ func (m *Module) Router() chi.Router {
 		r.Post("/yesterday", m.Handler.GetYesterdayProdcution)
 		r.Post("/newassemblygr", m.Handler.NewPreviousHourly)
 		r.Post("/immshiftwise", m.Handler.GetImmShiftProductionCount)
+		r.Post("/immlog", m.Handler.GetImmLimitDataDeviceWiseHandler)
 
 	})
 

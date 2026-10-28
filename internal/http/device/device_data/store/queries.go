@@ -171,6 +171,59 @@ SELECT production_count
 LIMIT 1
 `
 
+// Get IMM Limit data fetch
+
+const GetImmLimitDataDeviceWise = `
+WITH filtered_data AS (
+    SELECT
+        id,
+        event_id,
+        tenant_id,
+        device_id,
+        machine_id,
+        mold_no,
+        production_count,
+        cycle_time_sec,
+        production_time,
+        reset,
+        created_at,
+        updated_at
+    FROM public.imm_production_log
+    WHERE tenant_id = $1
+      AND device_id = $2
+      AND machine_id = $3
+    ORDER BY production_time DESC, id DESC
+    OFFSET 1
+    LIMIT $4
+),
+stats AS (
+    SELECT
+        COALESCE(MIN(cycle_time_sec), 0)::double precision AS min_cycle_time_sec,
+        COALESCE(MAX(cycle_time_sec), 0)::double precision AS max_cycle_time_sec,
+        COALESCE(AVG(cycle_time_sec), 0)::double precision AS avg_cycle_time_sec
+    FROM filtered_data
+)
+SELECT
+    fd.id,
+    fd.event_id,
+    fd.tenant_id,
+    fd.device_id,
+    fd.machine_id,
+    fd.mold_no,
+    fd.production_count,
+    fd.cycle_time_sec,
+    fd.production_time,
+    fd.reset,
+    fd.created_at,
+    fd.updated_at,
+    stats.min_cycle_time_sec,
+    stats.max_cycle_time_sec,
+    stats.avg_cycle_time_sec
+FROM filtered_data AS fd
+CROSS JOIN stats
+ORDER BY fd.production_time DESC, fd.id DESC
+`
+
 // const GetFirstShiftProductionCount = `
 // SELECT production_count
 // FROM assembly_production_log
