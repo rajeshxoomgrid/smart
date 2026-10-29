@@ -17,7 +17,7 @@ func (m *PartModule) Router() chi.Router {
 		r.Use(auth.Verifier(m.tokenAuth))
 		r.Use(auth.Authenticator(m.tokenAuth))
 		r.Use(auth.UserContextInjector)
-		// r.Post("/createmold", m.Handler.BulkCreate)
+		r.Post("/createpart", m.PartHandler.PartCreateHanlder)
 
 	})
 

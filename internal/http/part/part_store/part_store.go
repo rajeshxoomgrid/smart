@@ -1,6 +1,9 @@
 package partstore
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+)
 
 type PartStore struct {
 	db *sql.DB
@@ -8,4 +11,8 @@ type PartStore struct {
 
 func NewPartStore(db *sql.DB) *PartStore {
 	return &PartStore{db: db}
+}
+
+func (s *PartStore) BeginTx(ctx context.Context) (*sql.Tx, error) {
+	return s.db.BeginTx(ctx, nil)
 }
