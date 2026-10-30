@@ -4,6 +4,10 @@ type RoleDTO struct {
 	UserRole string `json:"user_role"`
 }
 
+type DepartmentDTO struct {
+	Department string `json:"department"`
+}
+
 type TenantDTO struct {
 	TenantName string `json:"tenant_name"`
 	TenantCode string `json:"tenant_code"`
@@ -19,14 +23,16 @@ type UserDTO struct {
 }
 
 type SetupSuperAdminDTO struct {
-	Role   RoleDTO   `json:"role"`
-	Tenant TenantDTO `json:"tenant"`
-	User   UserDTO   `json:"users"`
+	Role        RoleDTO       `json:"role"`
+	Tenant      TenantDTO     `json:"tenant"`
+	Deppartment DepartmentDTO `json:"department_master"`
+	User        UserDTO       `json:"users"`
 }
 
 type SetupResponse struct {
 	TenantID int64  `json:"tenant_id"`
 	RoleID   int64  `json:"role_id"`
 	UserID   int64  `json:"user_id"`
+	DeptID   int64  `json:"dept_id"`
 	Message  string `json:"message"`
 }

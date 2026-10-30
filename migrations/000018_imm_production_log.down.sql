@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS imm_production_log;
