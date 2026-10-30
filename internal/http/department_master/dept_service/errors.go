@@ -18,4 +18,8 @@ var (
 	ErrInvalidName = errors.New(
 		"invalid department name",
 	)
+
+	ErrTenantIDRequired = errors.New(
+		"Tenant id is required",
+	)
 )

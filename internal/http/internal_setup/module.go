@@ -26,12 +26,46 @@ func NewModule(db *sql.DB) *Module {
 	roleService := userrole.NewService(roleStore)
 	tenantService := tenant.NewService(tenantStore)
 	deptService := deptservice.NewDeptService(deptStore)
-	userService := users.NewService(userStore, users.RoleProvider(roleService), tenantStore, deptService)
+
+	userService := users.NewService(
+		userStore,
+		users.RoleProvider(roleService),
+		tenantStore,
+		deptService,
+	)
 
 	// Initialize setup service
-	setupService := NewService(db, tenantService, roleService, userService)
+	setupService := NewService(
+		db,
+		tenantService,
+		deptService,
+		roleService,
+		userService,
+	)
 
 	return &Module{
 		Service: setupService,
 	}
 }
+
+// func NewModule(db *sql.DB) *Module {
+
+// 	// Initialize stores
+// 	roleStore := userrole.NewStore(db)
+// 	tenantStore := tenant.NewStore(db)
+// 	deptStore := deptstore.NewDeptStore(db)
+// 	userStore := users.NewStore(db)
+
+// 	// Initialize services
+// 	roleService := userrole.NewService(roleStore)
+// 	tenantService := tenant.NewService(tenantStore)
+// 	deptService := deptservice.NewDeptService(deptStore)
+// 	userService := users.NewService(userStore, users.RoleProvider(roleService), tenantStore, deptService)
+
+// 	// Initialize setup service
+// 	setupService := NewService(db, tenantService, roleService, userService)
+
+// 	return &Module{
+// 		Service: setupService,
+// 	}
+// }

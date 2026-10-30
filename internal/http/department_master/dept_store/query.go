@@ -6,6 +6,7 @@ package deptstore
 
 const departmentSelectColumns = `
     id,
+    tenant_id,
     department,
     created_by,
     updated_by,
@@ -21,6 +22,26 @@ const departmentSelectColumns = `
 
 const queryCreateDepartment = `
     INSERT INTO department_master (
+        tenant_id,
+        department,
+        created_by,
+        updated_by
+       
+    )
+    VALUES (
+        $1,
+        $2,
+        $3,
+        $4
+    )
+    RETURNING
+` + departmentSelectColumns
+
+// New Create context
+
+const queryNewCreateDepartment = `
+    INSERT INTO department_master (
+        tenant_id,
         department,
         created_by,
         updated_by
@@ -28,7 +49,8 @@ const queryCreateDepartment = `
     VALUES (
         $1,
         $2,
-        $3
+        $3,
+        $4
     )
     RETURNING
 ` + departmentSelectColumns
@@ -110,5 +132,6 @@ const querySoftDeleteDepartment = `
         updated_at = CURRENT_TIMESTAMP
     WHERE
         id = $2
+        tenant_id = $3
         AND is_deleted = FALSE
 `

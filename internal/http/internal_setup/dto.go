@@ -23,10 +23,10 @@ type UserDTO struct {
 }
 
 type SetupSuperAdminDTO struct {
-	Role        RoleDTO       `json:"role"`
-	Tenant      TenantDTO     `json:"tenant"`
-	Deppartment DepartmentDTO `json:"department_master"`
-	User        UserDTO       `json:"users"`
+	Role       RoleDTO       `json:"role"`
+	Tenant     TenantDTO     `json:"tenant"`
+	Department DepartmentDTO `json:"department"`
+	User       UserDTO       `json:"users"`
 }
 
 type SetupResponse struct {

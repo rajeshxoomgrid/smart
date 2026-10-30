@@ -17,7 +17,7 @@ func NewHandler(service *Service) *Handler {
 
 func (h *Handler) SetupSuperAdmin(w http.ResponseWriter, r *http.Request) {
 
-	ctx := r.Context()
+	// ctx := r.Context()
 
 	// Allow only POST method
 	if r.Method != http.MethodPost {
@@ -41,9 +41,10 @@ func (h *Handler) SetupSuperAdmin(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("[DEV SETUP REQUEST]", dto)
 
+	// fmt.Println(dto)
+
 	// Call service layer
-	// result, err := h.service.SetupSuperAdmin(r.Context(), &dto)
-	result, err := h.service.SetupSuperAdmin(ctx, &dto)
+	result, err := h.service.SetupSuperAdmin(r.Context(), &dto)
 
 	if err != nil {
 		log.Println("[SETUP ERROR]", err)

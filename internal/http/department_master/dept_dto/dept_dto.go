@@ -9,6 +9,7 @@ import "time"
 type Department struct {
 	ID         int64      `json:"id"`
 	Department string     `json:"department"`
+	TenantID   int64      `json:"ṭenant_id"`
 	CreatedBy  *int64     `json:"created_by,omitempty"`
 	UpdatedBy  *int64     `json:"updated_by,omitempty"`
 	CreatedAt  time.Time  `json:"created_at"`

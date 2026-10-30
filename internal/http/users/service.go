@@ -234,27 +234,78 @@ func (ser *Service) LoginUser(ctx context.Context, req LoginRequest) (*LoginResp
 }
 
 // 3. Create Super User - Corrected
-func (s *Service) CreateSuperUserTx(ctx context.Context, tx *sql.Tx, tenantID int64, roleID int64, dto UserSuperRequest) (int64, error) {
-	createdBy := int64(1)
-	hasshedPassword, err := utils.HashPassword(dto.Password)
-	if err != nil {
-		return 0, err
+
+// Create Super Admin User inside an existing transaction.
+func (s *Service) CreateSuperUserTx(
+	ctx context.Context,
+	tx *sql.Tx,
+	tenantID int64,
+	roleID int64,
+	deptID int64,
+	dto UserSuperRequest,
+) (int64, error) {
+
+	if tx == nil {
+		return 0, fmt.Errorf("transaction is required")
 	}
+
+	if tenantID <= 0 {
+		return 0, fmt.Errorf("invalid tenant ID")
+	}
+
+	if roleID <= 0 {
+		return 0, fmt.Errorf("invalid role ID")
+	}
+
+	if deptID <= 0 {
+		return 0, fmt.Errorf("invalid department ID")
+	}
+
+	createdBy := int64(1)
+
+	hashedPassword, err := utils.HashPassword(dto.Password)
+	if err != nil {
+		return 0, fmt.Errorf("hash password: %w", err)
+	}
+
 	req := UserCreateRequest{
 		TenantID:   tenantID,
 		RoleID:     roleID,
+		DeptID:     deptID,
 		EmployeeID: dto.EmployeeID,
 		UserName:   dto.UserName,
 		Phone:      dto.Phone,
 		Email:      dto.Email,
-		Password:   hasshedPassword,
+		Password:   hashedPassword,
 		CreatedBy:  &createdBy,
 		UpdatedBy:  &createdBy,
 	}
 
 	return s.Store.CreateSuperAdminTx(ctx, tx, req)
-
 }
+
+// func (s *Service) CreateSuperUserTx(ctx context.Context, tx *sql.Tx, tenantID int64, roleID int64, dto UserSuperRequest) (int64, error) {
+// 	createdBy := int64(1)
+// 	hasshedPassword, err := utils.HashPassword(dto.Password)
+// 	if err != nil {
+// 		return 0, err
+// 	}
+// 	req := UserCreateRequest{
+// 		TenantID:   tenantID,
+// 		RoleID:     roleID,
+// 		DeptID: ,
+// 		EmployeeID: dto.EmployeeID,
+// 		UserName:   dto.UserName,
+// 		Phone:      dto.Phone,
+// 		Email:      dto.Email,
+// 		Password:   hasshedPassword,
+// 		CreatedBy:  &createdBy,
+// 		UpdatedBy:  &createdBy,
+// 	}
+
+// 	return s.Store.CreateSuperAdminTx(ctx, tx, req)
+
+// }
 
 // 4. Create Tenant User
 func (s *Service) CreateTenantUser(ctx context.Context, claims *auth.UserClaims, req *CreateTenantUserRequest) (*CreateUserResponse, error) {

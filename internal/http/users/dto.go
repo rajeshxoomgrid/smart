@@ -13,6 +13,7 @@ type UserSuperRequest struct {
 type UserCreateRequest struct {
 	TenantID   int64   `json:"tenant_id" validate:"required"`
 	RoleID     int64   `json:"role_id" validate:"required"`
+	DeptID     int64   `json:"dept_id" validate:"required"`
 	EmployeeID string  `json:"employee_id" validate:"required"`
 	UserName   string  `json:"user_name" validate:"required"`
 	Phone      *string `json:"phone"`

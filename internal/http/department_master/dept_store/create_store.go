@@ -15,10 +15,48 @@ import (
 // CREATE
 // ============================================================
 
+func (s *DeptStore) CreateDepartmentStore(ctx context.Context, tx *sql.Tx, userID, tenantID int64, req *deptdto.CreateDepartmentRequest) (*deptdto.Department, error) {
+	department := strings.ToLower(strings.TrimSpace(req.Department))
+
+	var result deptdto.Department
+
+	err := tx.QueryRowContext(
+		ctx,
+		queryNewCreateDepartment,
+		tenantID,
+		department,
+		userID,
+		userID,
+	).Scan(
+		&result.ID,
+		&result.TenantID,
+		&result.Department,
+		&result.CreatedBy,
+		&result.UpdatedBy,
+		&result.CreatedAt,
+		&result.UpdatedAt,
+		&result.IsDeleted,
+		&result.DeletedAt,
+	)
+	if err != nil {
+
+		if isDuplicateError(err) {
+			return nil, ErrDuplicate
+		}
+
+		return nil, fmt.Errorf(
+			"create department: %w",
+			err,
+		)
+	}
+
+	return &result, nil
+}
+
 func (s *DeptStore) Create(
 	ctx context.Context,
 	tx *sql.Tx,
-	userID int64,
+	userID, tenant_id int64,
 	req *deptdto.CreateDepartmentRequest,
 ) (*deptdto.Department, error) {
 
@@ -31,11 +69,13 @@ func (s *DeptStore) Create(
 	err := tx.QueryRowContext(
 		ctx,
 		queryCreateDepartment,
+		tenant_id,
 		department,
 		userID,
 		userID,
 	).Scan(
 		&result.ID,
+		&result.TenantID,
 		&result.Department,
 		&result.CreatedBy,
 		&result.UpdatedBy,

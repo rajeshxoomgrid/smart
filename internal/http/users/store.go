@@ -24,6 +24,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/lib/pq"
 	"github.com/rajeshbond/smart/internal/common/response"
@@ -264,14 +265,34 @@ func (s *Store) GetPasswordHashbyEmplopeeID(ctx context.Context, employeeID stri
 }
 
 // 5. Create Super Admin
-func (s *Store) CreateSuperAdminTx(ctx context.Context, tx *sql.Tx, dto UserCreateRequest) (int64, error) {
+
+func (s *Store) CreateSuperAdminTx(
+	ctx context.Context,
+	tx *sql.Tx,
+	dto UserCreateRequest,
+) (int64, error) {
+
+	if tx == nil {
+		return 0, fmt.Errorf("transaction is required")
+	}
 
 	query := `
-		INSERT INTO "user" 
-		(tenant_id, role_id, employee_id, user_name, phone, email, password, created_by, updated_by)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-		RETURNING id
-	`
+        INSERT INTO "user"
+        (
+            tenant_id,
+            role_id,
+            dept_id,
+            employee_id,
+            user_name,
+            phone,
+            email,
+            password,
+            created_by,
+            updated_by
+        )
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+        RETURNING id
+    `
 
 	var id int64
 
@@ -280,6 +301,7 @@ func (s *Store) CreateSuperAdminTx(ctx context.Context, tx *sql.Tx, dto UserCrea
 		query,
 		dto.TenantID,
 		dto.RoleID,
+		dto.DeptID,
 		dto.EmployeeID,
 		dto.UserName,
 		dto.Phone,
@@ -290,19 +312,57 @@ func (s *Store) CreateSuperAdminTx(ctx context.Context, tx *sql.Tx, dto UserCrea
 	).Scan(&id)
 
 	if err != nil {
-
-		// Handle duplicate key error
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23505" {
-				return 0, errors.New("user already exists")
+				return 0, fmt.Errorf("user already exists")
 			}
 		}
 
-		return 0, err
+		return 0, fmt.Errorf("insert super admin user: %w", err)
 	}
 
 	return id, nil
 }
+
+// func (s *Store) CreateSuperAdminTx(ctx context.Context, tx *sql.Tx, dto UserCreateRequest) (int64, error) {
+
+// 	query := `
+// 		INSERT INTO "user"
+// 		(tenant_id, role_id, employee_id, user_name, phone, email, password, created_by, updated_by)
+// 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+// 		RETURNING id
+// 	`
+
+// 	var id int64
+
+// 	err := tx.QueryRowContext(
+// 		ctx,
+// 		query,
+// 		dto.TenantID,
+// 		dto.RoleID,
+// 		dto.EmployeeID,
+// 		dto.UserName,
+// 		dto.Phone,
+// 		dto.Email,
+// 		dto.Password,
+// 		dto.CreatedBy,
+// 		dto.UpdatedBy,
+// 	).Scan(&id)
+
+// 	if err != nil {
+
+// 		// Handle duplicate key error
+// 		if pqErr, ok := err.(*pq.Error); ok {
+// 			if pqErr.Code == "23505" {
+// 				return 0, errors.New("user already exists")
+// 			}
+// 		}
+
+// 		return 0, err
+// 	}
+
+// 	return id, nil
+// }
 
 // 6.create Tenant Users
 // func (s *Store) CreateTenantUser(ctx context.Context, dto *CreateTenantUserRequest) (*CreateUserResponse, error) {
