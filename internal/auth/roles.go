@@ -124,6 +124,7 @@ func IsXoodGridAdmin(reqRole string) bool {
 	allowedRoles := map[string]struct{}{
 		"superadmin": {},
 		"xoomadmin":  {},
+		"xoomuser":   {},
 	}
 
 	_, ok := allowedRoles[reqRole]

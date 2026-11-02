@@ -22,6 +22,46 @@ func NewHandler(service *Service, tokenAuth *jwtauth.JWTAuth) *Handler {
 	}
 }
 
+// Create Role by super user
+
+func (h *Handler) CreateUserRoleBySuper(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	// 1. Authentication
+	claims, ok := auth.GetUserClaimsFromContext(ctx)
+	if !ok {
+		response.Error(w, http.StatusUnauthorized, response.NotAuthorized)
+		return
+	}
+
+	// 2. Authorization
+	if !auth.IsXoodGridAdmin(claims.Role) {
+		response.Error(w, http.StatusForbidden, response.NotAuthorized)
+		return
+	}
+
+	// 3. Decode JSON
+	var req CreateRoleBySuper
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid JSON body")
+		return
+	}
+
+	// 4. Service call
+	createRole, err := h.service.CreateRoleBySuper(ctx, req, claims)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// 5. Success response
+	response.JSON(w, http.StatusCreated, createRole)
+}
 func (h *Handler) CreateUserRole(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
@@ -63,7 +103,7 @@ func (h *Handler) CreateUserRole(w http.ResponseWriter, r *http.Request) {
 	}
 	userID := claims.UserID
 
-	createRole, err := h.service.Create(ctx, dto, userID)
+	createRole, err := h.service.Create(ctx, dto, claims.TenantID, userID)
 
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())

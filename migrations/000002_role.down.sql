@@ -19,8 +19,6 @@ DROP INDEX IF EXISTS uq_user_role_tenant_active;
 DROP TABLE IF EXISTS user_role;
 
 -- ============================================
--- Drop function
--- Only if no other tables are using it
+-- Do not drop update_updated_at_column()
 -- ============================================
-
-DROP FUNCTION IF EXISTS update_updated_at_column();
+-- This function may be used by other tables.

@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS user_role (
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at TIMESTAMPTZ,
 
-    -- Foreign key
     CONSTRAINT fk_user_role_tenant
         FOREIGN KEY (tenant_id)
         REFERENCES tenant(id)

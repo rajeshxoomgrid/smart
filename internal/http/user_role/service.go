@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
+	"github.com/rajeshbond/smart/internal/auth"
 )
 
 type Service struct {
@@ -17,7 +19,7 @@ func NewService(store *Store) *Service {
 
 func (s *Service) Create(
 	ctx context.Context,
-	dto CreateRole, userID int64,
+	dto CreateRole, tenantID, userID int64,
 ) (*UserRoleResponseDTO, error) {
 
 	fmt.Println("Service", dto)
@@ -39,13 +41,14 @@ func (s *Service) Create(
 	}
 
 	// role, err := s.store.Create(ctx, dto)
-	role, err := s.store.Create(ctx, dto, userID)
+	role, err := s.store.Create(ctx, dto.UserRole, tenantID, userID)
 	if err != nil {
 		return nil, err
 	}
 
 	return &UserRoleResponseDTO{
 		ID:        role.ID,
+		TenantID:  role.TenantID,
 		UserRole:  role.UserRole,
 		CreatedBy: role.CreatedBy,
 		UpdatedBy: role.UpdatedBy,
@@ -69,6 +72,29 @@ func (s *Service) CreateRoleTx(ctx context.Context, tx *sql.Tx, tenant_id int64,
 
 }
 
+func (s *Service) CreateRoleBySuper(
+	ctx context.Context,
+	req CreateRoleBySuper,
+	claims *auth.UserClaims,
+) (*UserRoleResponseDTO, error) {
+
+	if req.TenantID <= 0 {
+		return nil, fmt.Errorf("tenant ID is required")
+	}
+
+	userRole := strings.TrimSpace(req.UserRole)
+
+	if userRole == "" {
+		return nil, fmt.Errorf("user role is required")
+	}
+
+	return s.store.Create(
+		ctx,
+		strings.ToLower(userRole),
+		req.TenantID,
+		claims.UserID,
+	)
+}
 func (s *Service) GetRoleNameByID(ctx context.Context, roleID int64) (string, error) {
 
 	return s.store.GetRoleNameByID(ctx, roleID)
