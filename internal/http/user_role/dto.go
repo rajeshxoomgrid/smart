@@ -12,6 +12,11 @@ type CreateRole struct {
 	UserRole string `json:"user_role" validate:"required"`
 }
 
+type CreateRoleBySuper struct {
+	UserRole string `json:"user_role" validate:"required"`
+	TenantID int64  `json:"tenant_id" validate:"required"`
+}
+
 type UserRoleResponseDTO struct {
 	ID        int64     `json:"id"`
 	UserRole  string    `json:"user_role"`

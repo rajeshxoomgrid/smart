@@ -112,38 +112,87 @@ func (s *Store) GetRoleNameByID(ctx context.Context, roleID int64) (string, erro
 
 // 4. CreateRoleSuperTx - (only for development phase	)
 
-func (s *Store) CreateRoleSuperTx(ctx context.Context, tx *sql.Tx, dto CreateUserRoleDTO) (int64, error) {
+func (s *Store) CreateRoleSuperTx(
+	ctx context.Context,
+	tx *sql.Tx,
+	tenant_id int64,
+	dto CreateUserRoleDTO,
+) (int64, error) {
+
 	query := `
-		INSERT INTO "user_role" (user_role,created_by,updated_by) 
-		VALUES($1,$2,$3)
-		RETURNING id
-	`
+        INSERT INTO user_role (
+            tenant_id,
+            user_role,
+            created_by,
+            updated_by
+        )
+        VALUES ($1, $2, $3, $4)
+        RETURNING id
+    `
+
 	var roleID int64
 
 	err := tx.QueryRowContext(
 		ctx,
 		query,
-		strings.ToLower(dto.UserRole),
+		tenant_id,
+		strings.ToLower(strings.TrimSpace(dto.UserRole)),
 		dto.CreatedBy,
 		dto.UpdatedBy,
 	).Scan(&roleID)
 
 	if err != nil {
+		var pqErr *pq.Error
 
-		// Handle duplicate key error
-		if pqErr, ok := err.(*pq.Error); ok {
+		if errors.As(err, &pqErr) {
 			if pqErr.Code == "23505" {
 				return 0, errors.New("role already exists")
+			}
+
+			if pqErr.Code == "23503" {
+				return 0, errors.New("invalid tenant ID")
 			}
 		}
 
 		return 0, err
-
 	}
 
 	return roleID, nil
-
 }
+
+// func (s *Store) CreateRoleSuperTx(ctx context.Context, tx *sql.Tx,tenant_id int64,dto CreateUserRoleDTO) (int64, error) {
+// 	query := `
+// 		INSERT INTO "user_role" (tenant_id,user_role,created_by,updated_by)
+// 		VALUES($1,$2,$3,$4)
+// 		RETURNING id
+// 	`
+// 	var roleID int64
+
+// 	err := tx.QueryRowContext(
+// 		ctx,
+// 		query,
+// 		tenant_id,
+// 		strings.ToLower(dto.UserRole),
+// 		dto.CreatedBy,
+// 		dto.UpdatedBy,
+// 	).Scan(&roleID)
+
+// 	if err != nil {
+
+// 		// Handle duplicate key error
+// 		if pqErr, ok := err.(*pq.Error); ok {
+// 			if pqErr.Code == "23505" {
+// 				return 0, errors.New("role already exists")
+// 			}
+// 		}
+
+// 		return 0, err
+
+// 	}
+
+// 	return roleID, nil
+
+// }
 
 // 5. Role present in DB
 

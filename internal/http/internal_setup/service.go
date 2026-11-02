@@ -54,6 +54,7 @@ func (s *Service) SetupSuperAdmin(
 		return nil, fmt.Errorf("database connection is required")
 	}
 
+	// Role section
 	if s.roleService == nil ||
 		s.tenantService == nil ||
 		s.userService == nil ||
@@ -117,20 +118,7 @@ func (s *Service) SetupSuperAdmin(
 	}()
 
 	// ============================================================
-	// 3. CREATE ROLE
-	// ============================================================
-
-	roleID, err := s.roleService.CreateRoleTx(
-		ctx,
-		tx,
-		role,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("create role: %w", err)
-	}
-
-	// ============================================================
-	// 4. CREATE TENANT
+	// 3. CREATE TENANT
 	// ============================================================
 
 	tenantReq := tenant.CreateTenantRequied(dto.Tenant)
@@ -145,6 +133,20 @@ func (s *Service) SetupSuperAdmin(
 	)
 	if err != nil {
 		return nil, fmt.Errorf("create tenant: %w", err)
+	}
+
+	// ============================================================
+	// 4. CREATE ROLE
+	// ============================================================
+
+	roleID, err := s.roleService.CreateRoleTx(
+		ctx,
+		tx,
+		tenantID,
+		role,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("create role: %w", err)
 	}
 
 	// ============================================================

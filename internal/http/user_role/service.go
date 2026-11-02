@@ -55,7 +55,7 @@ func (s *Service) Create(
 }
 
 // This is for intial route only allowed in developemt phase
-func (s *Service) CreateRoleTx(ctx context.Context, tx *sql.Tx, role string) (int64, error) {
+func (s *Service) CreateRoleTx(ctx context.Context, tx *sql.Tx, tenant_id int64, role string) (int64, error) {
 
 	createdBy := int64(1)
 
@@ -65,7 +65,7 @@ func (s *Service) CreateRoleTx(ctx context.Context, tx *sql.Tx, role string) (in
 		UpdatedBy: &createdBy,
 	}
 
-	return s.store.CreateRoleSuperTx(ctx, tx, dto)
+	return s.store.CreateRoleSuperTx(ctx, tx, tenant_id, dto)
 
 }
 
