@@ -57,12 +57,10 @@ func (s *DeptStore) Create(
 	ctx context.Context,
 	tx *sql.Tx,
 	userID, tenant_id int64,
-	req *deptdto.CreateDepartmentRequest,
+	department string,
 ) (*deptdto.Department, error) {
 
-	department := strings.ToLower(
-		strings.TrimSpace(req.Department),
-	)
+	department = strings.ToLower(department)
 
 	var result deptdto.Department
 

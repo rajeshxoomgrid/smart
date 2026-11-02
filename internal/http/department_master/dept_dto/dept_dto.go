@@ -26,6 +26,11 @@ type CreateDepartmentRequest struct {
 	Department string `json:"department"`
 }
 
+type CreateDepartmentRequestSuper struct {
+	Department string `json:"department"`
+	TenantID   int64  `json:"tenant_id"`
+}
+
 // ============================================================
 // Update Request
 // ============================================================

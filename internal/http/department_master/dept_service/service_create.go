@@ -120,6 +120,56 @@ func (s *DeptService) CreateDepartmentTx(
 
 // }
 
+func (s *DeptService) CreateDepartmentBySuper(ctx context.Context, userID, tenantID int64, department string) (*deptdto.Department, error) {
+
+	if userID <= 0 {
+		return nil, ErrUserIDRequired
+	}
+
+	if tenantID <= 0 {
+		return nil, ErrTenantIDRequired
+	}
+
+	if department == "" {
+		return nil, ErrDepartmentRequired
+	}
+
+	if len(department) > 100 {
+		return nil, fmt.Errorf(
+			"department must not exceed 100 characters",
+		)
+	}
+	department = strings.ToLower(department)
+
+	var result *deptdto.Department
+
+	err := s.withTransaction(
+		ctx,
+		func(tx *sql.Tx) error {
+
+			var err error
+
+			result, err = s.DeptStore.Create(
+				ctx,
+				tx,
+				userID,
+				tenantID,
+				department,
+			)
+
+			return err
+		},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+
+// Create Department by Tenant
 func (s *DeptService) Create(
 	ctx context.Context,
 	claims *auth.UserClaims,
@@ -139,6 +189,8 @@ func (s *DeptService) Create(
 	if claims.TenantID <= 0 {
 		return nil, ErrTenantIDRequired
 	}
+
+	tenantID := claims.TenantID
 
 	if req == nil {
 		return nil, ErrDepartmentRequired
@@ -170,8 +222,8 @@ func (s *DeptService) Create(
 				ctx,
 				tx,
 				claims.UserID,
-				claims.TenantID,
-				req,
+				tenantID,
+				req.Department,
 			)
 
 			return err
