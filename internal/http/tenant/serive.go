@@ -330,3 +330,40 @@ func (s *Service) GetTenantStatus(ctx context.Context, tenantCode string) (bool,
 
 	return s.store.GetTenantStatus(ctx, tenantCode)
 }
+
+// Service list
+
+// Get All Tenants
+func (s *Service) GetAllTenants(
+	ctx context.Context,
+	req ListTenantRequest,
+) ([]TenantResponse, error) {
+
+	// Default sorting order
+	sortOrder := "DESC"
+
+	// If SortOrder is provided
+	if req.SortOrder != nil &&
+		strings.TrimSpace(*req.SortOrder) != "" {
+
+		sortOrder = strings.ToUpper(
+			strings.TrimSpace(*req.SortOrder),
+		)
+	}
+
+	// Validate sorting order
+	if sortOrder != "ASC" && sortOrder != "DESC" {
+		return nil, fmt.Errorf("sort_order must be ASC or DESC")
+	}
+
+	// Call Store
+	tenants, err := s.store.GetAllTenaunt(
+		ctx,
+		sortOrder,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return tenants, nil
+}

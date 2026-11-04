@@ -58,3 +58,15 @@ type UpdateTenantDTO struct {
 	IsActive          *bool   `json:"is_active"`
 	// UpdatedBy         *int64  `json:"updated_by"`
 }
+
+// List all the tenant
+
+type ListTenantResponse struct {
+	Sucess  bool             `json:"sucess"`
+	Message string           `json:"message"`
+	Data    []TenantResponse `json:"data"`
+}
+
+type ListTenantRequest struct {
+	SortOrder *string `json:"sort_order"`
+}

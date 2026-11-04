@@ -46,6 +46,12 @@ func NewService(store *Store, roleProvider RoleProvider, tenantProvider TenantPr
 	}
 }
 
+// New Function for Creare Tenant Admin with Tx
+
+// 1.01
+
+func (ser *Service) CreateNewTenantAdmin(ctx context.Context, claims *auth.UserClaims, req UserCreateRequest)
+
 // 1. Create User - Corrected
 func (ser *Service) CreateTenantAdmin(ctx context.Context, claims *auth.UserClaims, req UserCreateRequest) (*UserResponse, error) {
 

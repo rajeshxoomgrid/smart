@@ -26,6 +26,7 @@ func (m *Module) Router() chi.Router {
 		r.Use(auth.UserContextInjector)
 		// Create User Tenant
 		r.Post("/createtenant", m.Handler.CreateTenant)
+		r.Post("/list", m.Handler.GetAllTenants)
 		r.Post("/verifytenant", m.Handler.VerifyTenant)
 		r.Patch("/updatetenant/{tenant_code}", m.Handler.UpdateTenant)
 		r.Delete("/deletetenant/{tenant_code}", m.Handler.DeleteTenant)

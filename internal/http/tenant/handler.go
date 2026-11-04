@@ -261,3 +261,61 @@ func (h *Handler) UpdateTenant(w http.ResponseWriter, r *http.Request) {
 
 	response.JSON(w, http.StatusOK, resp)
 }
+
+// List all the Tenant
+
+func (h *Handler) GetAllTenants(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	// Validation Authencation
+
+	claims, err := auth.MustUserClaims(ctx)
+	if err != nil {
+
+		response.Error(
+			w,
+			http.StatusUnauthorized,
+			auth.UnAuthorised,
+		)
+
+		return
+	}
+
+	if !auth.IsXoodGridAdmin(claims.Role) {
+		response.Error(w, http.StatusUnauthorized, response.NotAuthorized)
+		return
+	}
+	// 1. Decode request body
+	var req ListTenantRequest
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// 2. Call Service
+
+	tenants, err := h.service.GetAllTenants(ctx, req)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, response.ErrInvalidRequest):
+			response.Error(w, http.StatusBadRequest, err.Error())
+		default:
+			response.Error(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	resp := ListTenantResponse{
+		Sucess:  true,
+		Message: "tenant list fetch sucessfully",
+		Data:    tenants,
+	}
+
+	response.JSON(w, http.StatusOK, resp)
+}

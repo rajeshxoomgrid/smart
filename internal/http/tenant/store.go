@@ -487,3 +487,103 @@ func (s *Store) GetTenantStatus(ctx context.Context, tenantCode string) (bool, b
 	return isVerified, isActive, IsDeleted, nil
 
 }
+
+// All tenant list
+
+func (s *Store) GetAllTenaunt(ctx context.Context, sortOrder string) ([]TenantResponse, error) {
+
+	query := fmt.Sprintf(`
+		SELECT
+			id,
+			tenant_name,
+			tenant_code,
+			contact_person_name,
+			contact_phone,
+			contact_email,
+			address,
+			is_verified,
+			is_active,
+			created_by,
+			updated_by,
+			is_deleted,
+			created_at,
+			updated_at
+		FROM tenant
+		WHERE is_deleted = FALSE
+		ORDER BY id %s
+	`, sortOrder)
+
+	rows, err := s.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch tenants: %w ", err)
+	}
+
+	defer rows.Close()
+
+	tenants := make([]TenantResponse, 0)
+
+	for rows.Next() {
+		var t TenantResponse
+
+		var contactPerson sql.NullString
+		var contactPhone sql.NullString
+		var contactEmail sql.NullString
+		var address sql.NullString
+
+		var createdBy sql.NullInt64
+		var updatedBy sql.NullInt64
+
+		err := rows.Scan(
+			&t.ID,
+			&t.TenantName,
+			&t.TenantCode,
+			&contactPerson,
+			&contactPhone,
+			&contactEmail,
+			&address,
+			&t.IsVerified,
+			&t.IsActive,
+			&createdBy,
+			&updatedBy,
+			&t.IsDeleted,
+			&t.CreatedAt,
+			&t.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan tenant: %w", err)
+		}
+
+		if contactPerson.Valid {
+			t.ContactPersonName = &contactPerson.String
+		}
+		if contactPhone.Valid {
+			t.ContactPhone = &contactPhone.String
+		}
+
+		if contactEmail.Valid {
+			t.ContactEmail = &contactEmail.String
+		}
+
+		if address.Valid {
+			t.Address = &address.String
+		}
+
+		if createdBy.Valid {
+			t.CreatedBy = &createdBy.Int64
+		}
+
+		if updatedBy.Valid {
+			t.UpdatedBy = &updatedBy.Int64
+		}
+
+		tenants = append(tenants, t)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate tenant rows:%w", err)
+	}
+
+	return tenants, nil
+
+}
