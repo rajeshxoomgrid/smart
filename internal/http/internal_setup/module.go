@@ -31,7 +31,7 @@ func NewModule(db *sql.DB) *Module {
 		userStore,
 		users.RoleProvider(roleService),
 		tenantStore,
-		deptService,
+		deptStore,
 	)
 
 	// Initialize setup service

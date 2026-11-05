@@ -25,6 +25,7 @@ func (m *Module) Router() chi.Router {
 		r.Use(auth.Authenticator(tokenAuth))
 		r.Use(auth.UserContextInjector)
 		// Create User Tenant
+
 		r.Post("/createtenant", m.Handler.CreateTenant)
 		r.Post("/list", m.Handler.GetAllTenants)
 		r.Post("/verifytenant", m.Handler.VerifyTenant)
