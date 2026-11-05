@@ -18,7 +18,7 @@ import (
 // // GET
 // // ============================================================
 
-func (s *DeptService) GetByID(
+func (s *DeptService) GetDeptByID(
 	ctx context.Context,
 	id int64,
 ) (*deptdto.Department, error) {
@@ -27,7 +27,7 @@ func (s *DeptService) GetByID(
 		return nil, ErrInvalidID
 	}
 
-	return s.DeptStore.GetByID(
+	return s.DeptStore.GetDeptByID(
 		ctx,
 		id,
 	)

@@ -9,7 +9,7 @@ import (
 	deptdto "github.com/rajeshbond/smart/internal/http/department_master/dept_dto"
 )
 
-func (s *DeptStore) GetByID(ctx context.Context, id int64) (*deptdto.Department, error) {
+func (s *DeptStore) GetDeptByID(ctx context.Context, id int64) (*deptdto.Department, error) {
 
 	var result deptdto.Department
 

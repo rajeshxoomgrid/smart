@@ -7,5 +7,5 @@ import (
 )
 
 type DeptProvider interface {
-	GetByID(ctx context.Context, id int64) (*deptdto.Department, error)
+	GetDeptByID(ctx context.Context, id int64) (*deptdto.Department, error)
 }

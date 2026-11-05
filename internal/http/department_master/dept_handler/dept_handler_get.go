@@ -52,7 +52,7 @@ func (h *DeptHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Service call
-	dept, err := h.DeptService.GetByID(ctx, id)
+	dept, err := h.DeptService.GetDeptByID(ctx, id)
 	if err != nil {
 		response.Error(
 			w,
