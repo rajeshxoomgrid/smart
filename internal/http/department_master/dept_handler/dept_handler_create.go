@@ -2,12 +2,14 @@ package depthandler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/rajeshbond/smart/internal/auth"
 	"github.com/rajeshbond/smart/internal/auth/permission"
 	"github.com/rajeshbond/smart/internal/common/response"
 	deptdto "github.com/rajeshbond/smart/internal/http/department_master/dept_dto"
+	deptstore "github.com/rajeshbond/smart/internal/http/department_master/dept_store"
 )
 
 func (handler *DeptHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -35,11 +37,21 @@ func (handler *DeptHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp, err := handler.DeptService.Create(ctx, claims, &req)
-
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, err.Error())
+		switch {
+		case errors.Is(err, deptstore.ErrDuplicate):
+			response.Error(w, http.StatusConflict, err.Error())
+		case errors.Is(err, deptstore.ErrNotFound):
+			response.Error(w, http.StatusNotFound, err.Error())
+		default:
+			response.Error(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
+	// if err != nil {
+	// 	response.Error(w, http.StatusConflict, err.Error())
+	// 	return
+	// }
 
 	response.JSON(w, http.StatusCreated, resp)
 

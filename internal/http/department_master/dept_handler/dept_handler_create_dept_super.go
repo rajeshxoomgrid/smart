@@ -38,7 +38,7 @@ func (h *DeptHandler) CreateDeptHandlerSuper(w http.ResponseWriter, r *http.Requ
 	resp, err := h.DeptService.CreateDepartmentBySuper(ctx, claims.UserID, req.TenantID, req.Department)
 
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, err.Error())
+		response.Error(w, http.StatusConflict, err.Error())
 		return
 	}
 
