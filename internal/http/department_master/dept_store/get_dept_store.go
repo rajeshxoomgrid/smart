@@ -57,6 +57,7 @@ func (s *DeptStore) GetByName(
 		name,
 	).Scan(
 		&result.ID,
+		&result.TenantID,
 		&result.Department,
 		&result.CreatedBy,
 		&result.UpdatedBy,
