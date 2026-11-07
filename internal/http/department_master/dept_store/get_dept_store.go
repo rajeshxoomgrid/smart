@@ -19,6 +19,7 @@ func (s *DeptStore) GetDeptByID(ctx context.Context, id int64) (*deptdto.Departm
 		id,
 	).Scan(
 		&result.ID,
+		&result.TenantID,
 		&result.Department,
 		&result.CreatedBy,
 		&result.UpdatedBy,
