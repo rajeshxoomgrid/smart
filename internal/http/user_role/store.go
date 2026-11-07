@@ -287,6 +287,76 @@ func (s *Store) CreateRoleSuperTx(
 	return roleID, nil
 }
 
+// Delete the user
+
+func (s *Store) DeleteUserRole(ctx context.Context, roleID, tenantID int64) (bool, error) {
+	const deleteQuery = `
+		UPDATE user_role
+		SET 
+			is_deleted = TRUE,
+			deleted_at = NOW(),
+			updated_at = NOW()
+		WHERE id = $1
+		AND tenant_id = $2
+		AND is_deleted = FALSE
+	`
+
+	result, err := s.db.ExecContext(
+		ctx,
+		deleteQuery,
+		roleID,
+		tenantID,
+	)
+
+	if err != nil {
+		return false, fmt.Errorf("delete user-role:%w", err)
+	}
+
+	rowAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, fmt.Errorf("get deleted user role row affected:%w", err)
+	}
+
+	return rowAffected > 0, nil
+
+}
+
+// Get the user role by the id
+// GetTheUserNameByID
+func (s *Store) GetTheUserNameByID(
+	ctx context.Context,
+	roleID int64,
+	tenantID int64,
+) (string, error) {
+
+	query := `
+		SELECT user_role
+		FROM user_role
+		WHERE id = $1
+		  AND tenant_id = $2
+		  AND is_deleted = FALSE
+	`
+
+	var roleName string
+
+	err := s.db.QueryRowContext(
+		ctx,
+		query,
+		roleID,
+		tenantID,
+	).Scan(&roleName)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", errors.New("user role not found")
+		}
+
+		return "", fmt.Errorf("get user role name by ID: %w", err)
+	}
+
+	return roleName, nil
+}
+
 // func (s *Store) CreateRoleSuperTx(ctx context.Context, tx *sql.Tx,tenant_id int64,dto CreateUserRoleDTO) (int64, error) {
 // 	query := `
 // 		INSERT INTO "user_role" (tenant_id,user_role,created_by,updated_by)

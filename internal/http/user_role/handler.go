@@ -143,3 +143,106 @@ func (h *Handler) GetUserRoleIDByName(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, roleId)
 
 }
+
+func (h *Handler) GetTheUserNameByID(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	// Authentication
+	claims, err := auth.MustUserClaims(ctx)
+	if err != nil {
+		response.Error(w, http.StatusUnauthorized, response.NotAuthorized)
+		return
+	}
+
+	// Get URL parameters
+	roleIDStr := chi.URLParam(r, "roleID")
+	tenantIDStr := chi.URLParam(r, "tenantID")
+
+	// Convert roleID to int64
+	roleID, err := strconv.ParseInt(roleIDStr, 10, 64)
+	if err != nil || roleID <= 0 {
+		response.Error(w, http.StatusBadRequest, "Invalid role ID")
+		return
+	}
+
+	// Convert tenantID to int64
+	tenantID, err := strconv.ParseInt(tenantIDStr, 10, 64)
+	if err != nil || tenantID <= 0 {
+		response.Error(w, http.StatusBadRequest, "Invalid tenant ID")
+		return
+	}
+
+	// Fetch role name
+	roleName, err := h.service.store.GetTheUserNameByID(ctx, roleID, claims.TenantID)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.JSON(w, http.StatusOK, roleName)
+
+}
+
+func (h *Handler) DeleteUserRole(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	// Authentication
+	claims, ok := auth.GetUserClaimsFromContext(ctx)
+	if !ok {
+		response.Error(w, http.StatusUnauthorized, response.NotAuthorized)
+		return
+	}
+
+	// Check admin role
+	role := claims.Role
+
+	if !auth.IsXoodGridAdmin(role) {
+		response.Error(w, http.StatusForbidden, response.NotAuthorized)
+		return
+	}
+
+	// Decode request body
+	var req DeleteRole
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	// Validate IDs
+	if req.RoleID <= 0 {
+		response.Error(w, http.StatusBadRequest, "Invalid role ID")
+		return
+	}
+
+	if req.TenantID <= 0 {
+		response.Error(w, http.StatusBadRequest, "Invalid tenant ID")
+		return
+	}
+
+	// Service call
+	deleted, err := h.service.DeleteUserrole(
+		ctx,
+		req.RoleID,
+		req.TenantID,
+	)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if !deleted {
+		response.Error(w, http.StatusNotFound, "User role not found")
+		return
+	}
+
+	response.JSON(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"message": "User role deleted successfully",
+	})
+}

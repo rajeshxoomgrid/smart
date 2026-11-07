@@ -26,3 +26,8 @@ type UserRoleResponseDTO struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+type DeleteRole struct {
+	RoleID   int64 `json:"id"`
+	TenantID int64 `json:"tenant_id"`
+}

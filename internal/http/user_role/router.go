@@ -40,6 +40,8 @@ func (m *Module) Router() chi.Router {
 		r.Post("/createrole", m.Handler.CreateUserRole)
 		r.Post("/createrolesuper", m.Handler.CreateUserRoleBySuper)
 		r.Get("/{tenantID}/{roleIDstr}", m.Handler.GetUserRoleIDByName)
+		r.Get("/{tenantID}/{roleID}", m.Handler.GetTheUserNameByID)
+		r.Post("/delete", m.Handler.DeleteUserRole)
 		// r.Post("/test", m.Handler.TestRole1)
 	})
 

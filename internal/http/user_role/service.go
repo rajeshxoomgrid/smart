@@ -30,13 +30,13 @@ func (s *Service) Create(
 		return nil, fmt.Errorf("user_role is required")
 	}
 
-	exist, err := s.store.RoleInDB(ctx, sendrole)
+	exist, err := s.store.GetRoleIDByName(ctx, sendrole, tenantID)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if exist {
+	if exist <= 0 {
 		return nil, fmt.Errorf("role already exists")
 	}
 
@@ -105,4 +105,31 @@ func (s *Service) GetRoleNameByID(ctx context.Context, roleID int64) (string, er
 func (s *Service) GetRoleIDByName(ctx context.Context, roleName string, tenantID int64) (int64, error) {
 
 	return s.store.GetRoleIDByName(ctx, roleName, tenantID)
+}
+
+// Delete the user-role
+
+func (s *Service) DeleteUserrole(ctx context.Context, roleID, tenatID int64) (bool, error) {
+	if roleID <= 0 {
+		return false, fmt.Errorf("Role ID should not zero")
+	}
+
+	if tenatID <= 0 {
+		return false, fmt.Errorf("Tenant ID should not zero")
+	}
+	return s.store.DeleteUserRole(ctx, roleID, tenatID)
+}
+
+// Get the UserName by ID
+
+func (s *Service) GetUserRoleIDByName(ctx context.Context, roleID, tenantID int64) (string, error) {
+	if roleID <= 0 {
+		return "", fmt.Errorf("Role ID should not zero")
+	}
+
+	if tenantID <= 0 {
+		return "", fmt.Errorf("Tenant ID should not zero")
+	}
+
+	return s.store.GetTheUserNameByID(ctx, roleID, tenantID)
 }

@@ -126,6 +126,7 @@ func IsXoodGridAdmin(reqRole string) bool {
 		"xoomadmin":   {},
 		"xoomuser":    {},
 		"systemadmin": {},
+		"plant head":  {},
 	}
 
 	_, ok := allowedRoles[reqRole]
