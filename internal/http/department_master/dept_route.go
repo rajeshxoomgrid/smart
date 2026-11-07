@@ -24,6 +24,7 @@ func (m *DeptModeule) Router() chi.Router {
 		r.Use(auth.UserContextInjector)
 		r.Post("/createdept", m.DeptHandler.Create)
 		r.Post("/createdeptsuper", m.DeptHandler.CreateDeptHandlerSuper)
+		r.Post("/listdept", m.DeptHandler.ListOfDepartHanlderTenantWise)
 		r.Get("/{id}", m.DeptHandler.GetByID)
 		r.Get("/name/{name}", m.DeptHandler.GetByName)
 

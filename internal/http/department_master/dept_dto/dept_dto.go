@@ -77,3 +77,7 @@ type MessageResponse struct {
 	Message string      `json:"message"`
 	Data    *Department `json:"data,omitempty"`
 }
+
+type ListDepartmentRequest struct {
+	TenantID *int64 `json:"tenant_id,omitempty"`
+}

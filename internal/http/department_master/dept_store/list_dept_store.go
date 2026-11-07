@@ -168,3 +168,43 @@ func (s *DeptStore) List(
 
 	return items, total, nil
 }
+
+// List All the department
+
+func (s *DeptStore) ListTenantAllDepartmentStore(ctx context.Context, tenantID int64) ([]deptdto.Department, error) {
+	rows, err := s.db.QueryContext(ctx, queryListDepartments, tenantID)
+	if err != nil {
+		return nil, fmt.Errorf("list departments:%w", err)
+	}
+
+	defer rows.Close()
+
+	departments := make([]deptdto.Department, 0)
+
+	for rows.Next() {
+		var dept deptdto.Department
+
+		err := rows.Scan(
+			&dept.ID,
+			&dept.Department,
+			&dept.TenantID,
+			&dept.CreatedBy,
+			&dept.UpdatedBy,
+			&dept.CreatedAt,
+			&dept.UpdatedAt,
+			&dept.IsDeleted,
+			&dept.DeletedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("Scan department:%w", err)
+		}
+
+		departments = append(departments, dept)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("iterate departemnt:%w", err)
+	}
+
+	return departments, nil
+}

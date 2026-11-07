@@ -135,3 +135,25 @@ const querySoftDeleteDepartment = `
         tenant_id = $3
         AND is_deleted = FALSE
 `
+
+// ===========================================================
+// List if all department tenant wise
+// AND LOWER(department) <> 'systemadmin' as well not equal to
+// ===========================================================
+const queryListDepartments = `
+    SELECT
+        id,
+        department,
+        tenant_id,
+        created_by,
+        updated_by,
+        created_at,
+        updated_at,
+        is_deleted,
+        deleted_at
+    FROM department_master
+    WHERE tenant_id = $1
+      AND is_deleted = false
+      AND LOWER(department) != 'systemadmin'  
+    ORDER BY department ASC
+`
