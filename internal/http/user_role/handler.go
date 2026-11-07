@@ -3,6 +3,7 @@ package userrole
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
@@ -130,7 +131,10 @@ func (h *Handler) GetUserRoleIDByName(w http.ResponseWriter, r *http.Request) {
 	}
 
 	roleIDStr := chi.URLParam(r, "roleIDstr")
-	roleId, err := h.service.GetRoleIDByName(ctx, roleIDStr)
+	tenantIDstr := chi.URLParam(r, "tenantID")
+	// Convert tenantID string to int64
+	tenantID, err := strconv.ParseInt(tenantIDstr, 10, 64)
+	roleId, err := h.service.GetRoleIDByName(ctx, roleIDStr, tenantID)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return

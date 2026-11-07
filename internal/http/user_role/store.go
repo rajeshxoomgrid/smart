@@ -182,10 +182,12 @@ func (s *Store) Create(
 // }
 
 // 2. GetRoleIDByName
-func (s *Store) GetRoleIDByName(ctx context.Context, roleName string) (int64, error) {
+func (s *Store) GetRoleIDByName(ctx context.Context, roleName string, tenantID int64) (int64, error) {
 	query := `
 	SELECT id FROM user_role
 	WHERE LOWER(user_role) = LOWER($1)
+	AND tenant_id = $2
+	AND is_deleted = FALSE
 	`
 
 	var roleID int64
@@ -193,7 +195,9 @@ func (s *Store) GetRoleIDByName(ctx context.Context, roleName string) (int64, er
 	err := s.db.QueryRowContext(
 		ctx,
 		query,
-		strings.ToLower(roleName)).Scan(&roleID)
+		strings.ToLower(roleName),
+		tenantID,
+	).Scan(&roleID)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

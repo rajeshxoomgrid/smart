@@ -102,7 +102,7 @@ func (s *Service) GetRoleNameByID(ctx context.Context, roleID int64) (string, er
 
 // Get the Role id from user role
 
-func (s *Service) GetRoleIDByName(ctx context.Context, roleName string) (int64, error) {
+func (s *Service) GetRoleIDByName(ctx context.Context, roleName string, tenantID int64) (int64, error) {
 
-	return s.store.GetRoleIDByName(ctx, roleName)
+	return s.store.GetRoleIDByName(ctx, roleName, tenantID)
 }
