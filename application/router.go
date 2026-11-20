@@ -28,6 +28,7 @@ import (
 	internalsetup "github.com/rajeshbond/smart/internal/http/internal_setup"
 	machine "github.com/rajeshbond/smart/internal/http/machine_imm"
 	moldchangeregister "github.com/rajeshbond/smart/internal/http/mold_change_register"
+	"github.com/rajeshbond/smart/internal/http/mosquitto"
 	"github.com/rajeshbond/smart/internal/http/part"
 	"github.com/rajeshbond/smart/internal/http/permission"
 	"github.com/rajeshbond/smart/internal/http/shift"
@@ -172,6 +173,11 @@ func NewRouter(app *App) http.Handler {
 
 	assemblyMasterModule := assemblymaster.NewModuleAssembly(app.DB.SQLDB, tokenAuth)
 	r.Mount("/assemblymaster", assemblyMasterModule.Router())
+
+	// Mosquitto
+
+	mosquittoModule := mosquitto.NewMosquittoModule(app.DB.SQLDB, tokenAuth)
+	r.Mount("/mosquitto", mosquittoModule.Router())
 
 	// Route Mounts Ends here <---------------
 

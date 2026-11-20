@@ -6,6 +6,6 @@ type MosquittoStore struct {
 	db *sql.DB
 }
 
-func NewStore(db *sql.DB) *MosquittoStore {
+func NewMosquittoStore(db *sql.DB) *MosquittoStore {
 	return &MosquittoStore{db: db}
 }

@@ -14,6 +14,5 @@ func NewMosquittoHandler(tokenauth *jwtauth.JWTAuth, moquittoService *mosquittos
 	return &MosquittoHandler{
 		tokenAuth:        tokenauth,
 		MosquittoServide: moquittoService,
-		
 	}
 }
