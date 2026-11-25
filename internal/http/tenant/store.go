@@ -510,6 +510,7 @@ func (s *Store) GetAllTenaunt(ctx context.Context, sortOrder string) ([]TenantRe
 			updated_at
 		FROM tenant
 		WHERE is_deleted = FALSE
+		AND tenant_code != 'xoom'
 		ORDER BY id %s
 	`, sortOrder)
 

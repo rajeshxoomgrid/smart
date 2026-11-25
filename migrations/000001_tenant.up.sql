@@ -1,28 +1,51 @@
--- Create user_role table
-CREATE TABLE IF NOT EXISTS user_role (
-    id SERIAL PRIMARY KEY,
-    user_role VARCHAR(100) NOT NULL,
-    tenant_id INTEGER NOT NULL,
-    created_by INTEGER,
-    updated_by INTEGER,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ,
+-- =========================
+-- TENANT TABLE
+-- =========================
 
-    CONSTRAINT fk_user_role_tenant
-        FOREIGN KEY (tenant_id)
-        REFERENCES tenant(id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+CREATE TABLE IF NOT EXISTS tenant ( id SERIAL PRIMARY KEY,
+
+-- Basic Information
+tenant_name VARCHAR(150) NOT NULL,
+tenant_code VARCHAR(100) NOT NULL,
+address TEXT NOT NULL,
+
+-- Location
+country VARCHAR(100) NOT NULL DEFAULT 'India',
+timezone VARCHAR(64) NOT NULL DEFAULT 'Asia/Kolkata',
+
+-- Contact
+contact_person_name VARCHAR(150),
+contact_phone VARCHAR(20),
+contact_email VARCHAR(150),
+
+-- Status
+is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+-- Soft Delete
+is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+deleted_at TIMESTAMPTZ,
+deleted_by INTEGER,
+
+-- Audit
+created_by INTEGER,
+updated_by INTEGER,
+created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+-- Validation
+
+CONSTRAINT chk_country_not_empty
+        CHECK (TRIM(country) <> ''),
+
+    CONSTRAINT chk_timezone_not_empty
+        CHECK (TRIM(timezone) <> '')
 );
 
--- Unique active role per tenant
-CREATE UNIQUE INDEX uq_user_role_tenant_active
-ON user_role (tenant_id, LOWER(user_role))
-WHERE is_deleted = FALSE;
+-- =========================
+-- FUNCTION (CREATE ONCE)
+-- =========================
 
--- Updated at function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -31,12 +54,34 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Updated at trigger
-DROP TRIGGER IF EXISTS trg_update_user_role_updated_at
-ON user_role;
+-- =========================
+-- TRIGGER
+-- =========================
 
-CREATE TRIGGER trg_update_user_role_updated_at
-BEFORE UPDATE ON user_role
+DROP TRIGGER IF EXISTS trg_update_tenant_updated_at ON tenant;
+
+CREATE TRIGGER trg_update_tenant_updated_at
+BEFORE UPDATE ON tenant
 FOR EACH ROW
-WHEN (OLD IS DISTINCT FROM NEW)
 EXECUTE FUNCTION update_updated_at_column();
+
+-- =========================
+-- UNIQUE INDEXES (ACTIVE ONLY)
+-- =========================
+
+CREATE UNIQUE INDEX IF NOT EXISTS uix_tenant_code_active ON tenant (LOWER(tenant_code))
+WHERE
+    is_deleted = FALSE;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uix_tenant_contact_email_active ON tenant (LOWER(contact_email))
+WHERE
+    is_deleted = FALSE
+    AND contact_email IS NOT NULL;
+
+-- =========================
+-- PERFORMANCE INDEXES
+-- =========================
+
+CREATE INDEX IF NOT EXISTS idx_tenant_active ON tenant (is_deleted, is_active);
+
+CREATE INDEX IF NOT EXISTS idx_tenant_timezone ON tenant (timezone);
