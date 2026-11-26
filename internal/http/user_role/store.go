@@ -50,7 +50,14 @@ func (s *Store) Create(
 			updated_by
 		)
 		VALUES ($1, $2, $3, $3)
-		ON CONFLICT (user_role, tenant_id) DO NOTHING
+
+		ON CONFLICT (
+			tenant_id,
+			(LOWER(user_role))
+		)
+		WHERE is_deleted = FALSE
+		DO NOTHING
+
 		RETURNING
 			id,
 			user_role,
@@ -81,7 +88,9 @@ func (s *Store) Create(
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("role already exists for this tenant")
+			return nil, fmt.Errorf(
+				"role already exists for this tenant",
+			)
 		}
 
 		return nil, err
@@ -89,6 +98,67 @@ func (s *Store) Create(
 
 	return &role, nil
 }
+
+// func (s *Store) Create(
+// 	ctx context.Context,
+// 	userRole string,
+// 	tenantID int64,
+// 	userID int64,
+// ) (*UserRoleResponseDTO, error) {
+
+// 	userRole = strings.ToLower(strings.TrimSpace(userRole))
+
+// 	if userRole == "" {
+// 		return nil, fmt.Errorf("user role is required")
+// 	}
+
+// 	query := `
+// 		INSERT INTO user_role (
+// 			user_role,
+// 			tenant_id,
+// 			created_by,
+// 			updated_by
+// 		)
+// 		VALUES ($1, $2, $3, $3)
+// 		ON CONFLICT (user_role, tenant_id) DO NOTHING
+// 		RETURNING
+// 			id,
+// 			user_role,
+// 			tenant_id,
+// 			created_by,
+// 			updated_by,
+// 			created_at,
+// 			updated_at
+// 	`
+
+// 	var role UserRoleResponseDTO
+
+// 	err := s.db.QueryRowContext(
+// 		ctx,
+// 		query,
+// 		userRole,
+// 		tenantID,
+// 		userID,
+// 	).Scan(
+// 		&role.ID,
+// 		&role.UserRole,
+// 		&role.TenantID,
+// 		&role.CreatedBy,
+// 		&role.UpdatedBy,
+// 		&role.CreatedAt,
+// 		&role.UpdatedAt,
+// 	)
+
+// 	if err != nil {
+// 		if errors.Is(err, sql.ErrNoRows) {
+// 			return nil, fmt.Errorf("role already exists for this tenant")
+// 		}
+
+// 		return nil, err
+// 	}
+
+// 	return &role, nil
+// }
 
 // func (s *Store) Create(
 // 	ctx context.Context,
