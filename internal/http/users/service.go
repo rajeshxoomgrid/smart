@@ -596,3 +596,52 @@ func (ser *Service) GetUserByEmployeeID(ctx context.Context, employeeID string, 
 		RoleID:     user.RoleID,
 	}, nil
 }
+
+// ResetPassword
+
+func (ser *Service) ResetPassword(ctx context.Context, req ResetPasswordRequest, claims *auth.UserClaims) (*ResetPasswordResponse, error) {
+
+	// validate request
+
+	if err := utils.Validate.Struct(req); err != nil {
+		return nil, err
+	}
+
+	// get hashed password
+
+	_, currentHassedPassword, err := ser.Store.GetPasswordHashbyEmplopeeID(ctx, claims.EmployeeID)
+	if err != nil {
+		return nil, err
+	}
+	// Compare old password
+	if err := utils.CompareHash(currentHassedPassword, req.OldPassword); err != nil {
+		return nil, errors.New("old password is incorrect")
+	}
+
+	// Check new password
+	if req.OldPassword == req.NewPassword {
+		return nil, errors.New("new password must be different from old password")
+	}
+
+	// Hash new password
+	newHashedPassword, err := utils.HashPassword(req.NewPassword)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update password
+	err = ser.Store.UpdatePassword(
+		ctx,
+		claims.EmployeeID,
+		claims.TenantID,
+		newHashedPassword,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ResetPasswordResponse{
+		Message: "password reset successfully",
+	}, nil
+
+}

@@ -110,3 +110,16 @@ type VerifyTenantRequest struct {
 	EmployeeID string `json:"employee_id"`
 	TenantID   int64  `json:"tenant_id"`
 }
+
+// Reset the password Request
+
+type ResetPasswordRequest struct {
+	OldPassword string `json:"old_password" validate:"required"`
+	NewPassword string `json:"new_password" validate:"required,min=6"`
+}
+
+// Reset Password Response
+
+type ResetPasswordResponse struct {
+	Message string `json:"message"`
+}

@@ -356,3 +356,35 @@ func (h *Handler) GetAllTenantUsers(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, resp)
 
 }
+
+// Reset the user Password
+
+func (h *Handler) ResetUserPassword(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	defer r.Body.Close()
+
+	var req ResetPasswordRequest
+
+	claims, ok := auth.GetUserClaimsFromContext(ctx)
+	if !ok {
+		response.Error(w, http.StatusUnauthorized, response.NotAuthorized)
+		return
+	}
+
+	// Decode
+	// decode request body
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	resp, err := h.Service.ResetPassword(ctx, req, claims)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response.JSON(w, http.StatusOK, resp)
+}

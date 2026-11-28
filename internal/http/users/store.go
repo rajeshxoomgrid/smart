@@ -862,3 +862,43 @@ ORDER BY id
 
 	return users, nil
 }
+
+func (s *Store) UpdatePassword(
+	ctx context.Context,
+	employeeID string,
+	tenantID int64,
+	passwordHash string,
+) error {
+
+	query := `
+        UPDATE "user"
+        SET
+            password = $1,
+            updated_at = NOW()
+        WHERE employee_id = $2
+          AND tenant_id = $3
+          AND is_deleted = FALSE
+    `
+
+	result, err := s.db.ExecContext(
+		ctx,
+		query,
+		passwordHash,
+		employeeID,
+		tenantID,
+	)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return errors.New("user not found")
+	}
+
+	return nil
+}
